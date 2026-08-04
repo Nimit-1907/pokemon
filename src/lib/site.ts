@@ -7,7 +7,10 @@ export const site = {
     line: "1555 Talbot Rd #507-A",
     city: "Windsor, ON N9R 1L0",
   },
+  /** Used for the Google Maps embed query. */
+  mapQuery: "1555 Talbot Rd, Windsor, ON N9R 1L0",
   phone: "+1 (519) 969-0707",
+  email: "hello@emeraldcardsandgames.ca",
   hours: [
     { days: "Mon – Sat", time: "12PM – 8PM" },
     { days: "Sun", time: "12PM – 5PM" },

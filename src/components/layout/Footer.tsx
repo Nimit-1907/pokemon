@@ -27,6 +27,7 @@ export function Footer() {
                 {item.label}
               </FooterLink>
             ))}
+            <FooterLink href="/contact">Contact</FooterLink>
           </FooterCol>
 
           {/* Collections */}

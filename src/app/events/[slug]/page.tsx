@@ -109,7 +109,7 @@ export default async function EventPage(props: PageProps<"/events/[slug]">) {
                 variant="outline"
                 className="mt-3 w-full hover:text-brand"
               >
-                <Link href="/about">Contact the Store</Link>
+                <Link href="/contact">Contact the Store</Link>
               </Button>
             </div>
           </aside>
