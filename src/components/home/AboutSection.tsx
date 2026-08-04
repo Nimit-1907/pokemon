@@ -4,6 +4,7 @@ import { ArrowRight, Clock, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SocialLinks } from "@/components/shared/SocialLinks";
+import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/button";
 import { site } from "@/lib/site";
 
@@ -25,9 +26,14 @@ export function AboutSection() {
       />
 
       <Container className="relative">
-        <SectionHeading title="About Us" />
+        <Reveal>
+          <SectionHeading title="About Us" />
+        </Reveal>
 
-        <div className="grid items-stretch gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
+        <Reveal
+          delay={0.05}
+          className="grid items-stretch gap-6 lg:grid-cols-[1.1fr_1fr_1fr]"
+        >
           {/* Store image */}
           <div className="glow-ring relative min-h-56 overflow-hidden rounded-xl border">
             <Image
@@ -86,7 +92,7 @@ export function AboutSection() {
 
             <SocialLinks className="mt-1" />
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );
