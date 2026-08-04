@@ -1,7 +1,9 @@
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { EventCard } from "@/components/shared/EventCard";
-import { events } from "@/lib/data";
+import { sortedEvents } from "@/lib/data";
+
+const upcoming = sortedEvents.slice(0, 4);
 
 export function UpcomingEvents() {
   return (
@@ -13,7 +15,7 @@ export function UpcomingEvents() {
           viewAllLabel="View All Events"
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {events.map((event) => (
+          {upcoming.map((event) => (
             <EventCard key={event.slug} event={event} />
           ))}
         </div>

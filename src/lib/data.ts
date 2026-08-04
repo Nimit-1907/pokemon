@@ -141,11 +141,52 @@ export const events: StoreEvent[] = [
       "Join our Disney Lorcana League for a relaxed afternoon of games, trades, and exclusive league promos for every Illumineer.",
     gradient: { from: "#7c4dbd", to: "#2a1a4a" },
   },
+  {
+    slug: "sports-card-break-night",
+    title: "Sports Card Break Night",
+    date: "2026-05-18",
+    time: "7:00 PM",
+    entry: "Buy-in varies",
+    collection: "sports-cards",
+    location: "Emerald Cards & Games — Windsor, ON",
+    description:
+      "Group breaks of the hottest hobby boxes. Claim your teams, watch the hits live, and take home every card from your slots.",
+    gradient: { from: "#2f7fd1", to: "#123a63" },
+  },
+  {
+    slug: "commander-night",
+    title: "Commander Night",
+    date: "2026-06-20",
+    time: "6:30 PM",
+    entry: "Free",
+    collection: "magic",
+    location: "Emerald Cards & Games — Windsor, ON",
+    description:
+      "Bring your favourite 100-card deck for a night of multiplayer Magic. Pods form all evening — new and veteran commanders welcome.",
+    gradient: { from: "#6b5b95", to: "#241b30" },
+  },
+  {
+    slug: "pokemon-prerelease",
+    title: "Pokémon Set Prerelease",
+    date: "2026-06-28",
+    time: "11:00 AM",
+    entry: "$30 Entry",
+    collection: "pokemon",
+    location: "Emerald Cards & Games — Windsor, ON",
+    description:
+      "Be the first to open the newest Pokémon TCG set. Build a deck from your prerelease kit and battle for exclusive promo cards.",
+    gradient: { from: "#f5b342", to: "#b8341e" },
+  },
 ];
 
 export function getEvent(slug: string): StoreEvent | undefined {
   return events.find((e) => e.slug === slug);
 }
+
+/** Events in chronological order (ISO dates sort lexicographically). */
+export const sortedEvents: StoreEvent[] = [...events].sort((a, b) =>
+  a.date.localeCompare(b.date),
+);
 
 export const products: Product[] = [
   // Pokémon
