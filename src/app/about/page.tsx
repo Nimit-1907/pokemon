@@ -15,8 +15,7 @@ export const metadata: Metadata = {
   description: site.description,
 };
 
-const STORE_IMAGE =
-  "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1000&q=70";
+const STORE_IMAGE = "/images/store-about.webp";
 
 const features = [
   {
@@ -51,11 +50,11 @@ export default function AboutPage() {
         />
         <Container className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-2">
           <div>
-            <h1 className="font-display text-4xl font-bold uppercase leading-tight tracking-tight text-foreground sm:text-5xl">
+            <h1 className="font-display text-h1 font-bold uppercase text-foreground">
               About Emerald{" "}
               <span className="text-glow">Cards &amp; Games</span>
             </h1>
-            <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
+            <p className="mt-5 max-w-lg text-lead text-muted-foreground">
               We are a local game store in Windsor, Ontario, passionate about
               trading cards, board games, and building a strong gaming
               community.
@@ -68,8 +67,10 @@ export default function AboutPage() {
                     <Icon className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-semibold text-foreground">{title}</h3>
-                    <p className="text-sm text-muted-foreground">{desc}</p>
+                    <h3 className="text-h3 font-semibold text-foreground">
+                      {title}
+                    </h3>
+                    <p className="text-body-sm text-muted-foreground">{desc}</p>
                   </div>
                 </li>
               ))}
@@ -110,8 +111,10 @@ export default function AboutPage() {
               <StoreInfoCards />
               <div className="glow-card flex flex-wrap items-center justify-between gap-4 rounded-xl p-5">
                 <div>
-                  <h3 className="font-semibold text-foreground">Follow Us</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-h3 font-semibold text-foreground">
+                    Follow Us
+                  </h3>
+                  <p className="text-body-sm text-muted-foreground">
                     Stay up to date with drops and events.
                   </p>
                 </div>

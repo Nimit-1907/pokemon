@@ -1,60 +1,147 @@
+"use client";
+
+import { motion, useReducedMotion } from "motion/react";
 import { CardArt } from "@/components/shared/CardArt";
 import { getCollection } from "@/lib/data";
 import type { CollectionSlug } from "@/types";
 import { cn } from "@/lib/utils";
 
-/** A fanned spread of trading cards — the hero's signature visual. */
-const FAN: {
-  slug: CollectionSlug;
+/**
+ * The arc the cards sit on, left to right. Offsets are fractions of a card's
+ * own width/height (percentage translates) rather than fixed pixels, so the
+ * whole fan scales with its container and every card stays on screen down to
+ * the narrowest phone. `--fan-spread` tightens the arc on small screens.
+ */
+const SLOTS: {
+  /** degrees at full spread */
   rotate: number;
+  /** multiples of card width */
   x: number;
+  /** multiples of card height */
   y: number;
   z: number;
   scale: number;
+  /** the half of the card its neighbour doesn't cover */
+  align: "start" | "center" | "end";
 }[] = [
-  { slug: "sports-cards", rotate: -22, x: -170, y: 46, z: 10, scale: 0.9 },
-  { slug: "magic", rotate: -11, x: -90, y: 8, z: 20, scale: 0.96 },
-  { slug: "pokemon", rotate: 0, x: 0, y: -8, z: 40, scale: 1.08 },
-  { slug: "one-piece", rotate: 11, x: 90, y: 8, z: 20, scale: 0.96 },
-  { slug: "disney-lorcana", rotate: 22, x: 170, y: 46, z: 10, scale: 0.9 },
+  { rotate: -22, x: -1.33, y: 0.27, z: 10, scale: 0.9, align: "start" },
+  { rotate: -11, x: -0.7, y: 0.05, z: 20, scale: 0.96, align: "start" },
+  { rotate: 0, x: 0, y: -0.05, z: 40, scale: 1.08, align: "center" },
+  { rotate: 11, x: 0.7, y: 0.05, z: 20, scale: 0.96, align: "end" },
+  { rotate: 22, x: 1.33, y: 0.27, z: 10, scale: 0.9, align: "end" },
 ];
 
-export function CardFan({ className }: { className?: string }) {
+/** The front slot — whichever card is selected rotates into it. */
+export const FAN_CENTER = 2;
+
+/** The cards, in their at-rest left-to-right order. */
+export const fanCards = (
+  [
+    { slug: "sports-cards" },
+    { slug: "magic", short: "Magic" },
+    { slug: "pokemon" },
+    { slug: "one-piece" },
+    { slug: "disney-lorcana", short: "Lorcana" },
+  ] satisfies { slug: CollectionSlug; short?: string }[]
+).map((card) => ({ ...card, collection: getCollection(card.slug)! }));
+
+/** Past this much drag (or flick speed) the deck advances one card. */
+const SWIPE_DISTANCE = 40;
+const SWIPE_VELOCITY = 300;
+
+/**
+ * A fanned spread of trading cards — the hero's signature visual.
+ * `active` is the index of the card held at the front; the rest rotate around
+ * the arc to make room for it. Passing `onActiveChange` makes the fan
+ * swipeable — drag or flick it sideways to deal the next card to the front.
+ */
+export function CardFan({
+  active = FAN_CENTER,
+  onActiveChange,
+  className,
+}: {
+  active?: number;
+  onActiveChange?: (index: number) => void;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const swipeable = Boolean(onActiveChange);
+
+  /** +1 deals the card on the right to the front, -1 the one on the left. */
+  const advance = (direction: number) =>
+    onActiveChange?.(
+      (active + direction + fanCards.length) % fanCards.length,
+    );
+
   return (
-    <div
+    <motion.div
+      // `drag` leaves touch-action: pan-y in place, so the page still scrolls.
+      drag={swipeable ? "x" : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={reduce ? 0 : 0.12}
+      dragMomentum={false}
+      onDragEnd={(_, info) => {
+        if (info.offset.x < -SWIPE_DISTANCE || info.velocity.x < -SWIPE_VELOCITY)
+          advance(1);
+        else if (
+          info.offset.x > SWIPE_DISTANCE ||
+          info.velocity.x > SWIPE_VELOCITY
+        )
+          advance(-1);
+      }}
       className={cn(
-        "relative mx-auto h-[340px] w-full max-w-md sm:h-[420px]",
+        "relative mx-auto aspect-[4/3] w-full max-w-sm [--fan-spread:0.72]",
+        "sm:max-w-md sm:[--fan-spread:0.85]",
+        "lg:max-w-lg lg:[--fan-spread:1]",
+        swipeable && "cursor-grab touch-pan-y select-none active:cursor-grabbing",
         className,
       )}
     >
       {/* Emerald glow pool behind the cards */}
       <div
         aria-hidden
-        className="absolute left-1/2 top-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+        className="absolute left-1/2 top-1/2 size-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
         style={{ background: "rgba(85,231,27,0.22)" }}
       />
-      {FAN.map((card) => {
-        const collection = getCollection(card.slug)!;
+      {fanCards.map((card, i) => {
+        // Rotate the deck so the active card lands in the centre slot.
+        const slot =
+          SLOTS[(i - active + FAN_CENTER + SLOTS.length * 2) % SLOTS.length];
+        const centered = slot.align === "center";
         return (
           <div
             key={card.slug}
-            className="absolute left-1/2 top-1/2 w-32 sm:w-40"
+            className="fan-card absolute left-1/2 top-1/2 w-[30%]"
             style={{
-              transform: `translate(-50%, -50%) translate(${card.x}px, ${card.y}px) rotate(${card.rotate}deg) scale(${card.scale})`,
-              zIndex: card.z,
+              transform: [
+                "translate(-50%, -50%)",
+                `translate(calc(${slot.x * 100}% * var(--fan-spread)), calc(${slot.y * 100}% * var(--fan-spread)))`,
+                `rotate(calc(${slot.rotate}deg * var(--fan-spread)))`,
+                `scale(${slot.scale})`,
+              ].join(" "),
+              zIndex: slot.z,
             }}
           >
-            <div className="overflow-hidden rounded-xl border border-white/15 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)] ring-1 ring-black/40">
+            <div className="overflow-hidden rounded-lg border border-white/15 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)] ring-1 ring-black/40 sm:rounded-xl">
               <CardArt
-                name={collection.name}
-                gradient={collection.gradient}
+                /* Only the front card has room for a long name. */
+                name={
+                  centered
+                    ? card.collection.name
+                    : (card.short ?? card.collection.name)
+                }
+                gradient={card.collection.gradient}
+                image={card.collection.image}
+                sizes="(min-width: 1024px) 160px, 30vw"
+                priority
                 className="aspect-[3/4] w-full"
                 compact
+                align={slot.align}
               />
             </div>
           </div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

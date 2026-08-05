@@ -1,74 +1,128 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * On-brand gradient stand-in for copyrighted collection/card art.
- * Renders the collection name as a stylized logo lockup over a gradient,
- * with a soft radial highlight and a faint faceted emblem.
+ * Collection/event artwork.
+ *
+ * With `image` it renders the real artwork; the name is left to the art, which
+ * already carries its own lockup. Without one it falls back to the on-brand
+ * gradient stand-in with the name set in the display face — collections we
+ * don't have art for still look deliberate rather than broken.
  */
 export function CardArt({
   name,
   tagline,
   gradient,
+  image,
+  sizes = "100vw",
+  priority = false,
   className,
   compact = false,
+  /** Where the lockup sits — useful when a card is partly overlapped. */
+  align = "center",
 }: {
   name: string;
   tagline?: string;
   gradient: { from: string; to: string };
+  /** Artwork path under /public. Falls back to the gradient when absent. */
+  image?: string;
+  /** Passed to next/image so phones don't download desktop-sized art. */
+  sizes?: string;
+  priority?: boolean;
   className?: string;
   compact?: boolean;
+  align?: "center" | "start" | "end";
 }) {
   return (
     <div
-      className={cn("relative overflow-hidden", className)}
+      className={cn("@container relative overflow-hidden", className)}
       style={{
+        // Doubles as the backdrop while the artwork decodes.
         backgroundImage: `linear-gradient(150deg, ${gradient.from}, ${gradient.to})`,
       }}
     >
-      {/* Radial sheen */}
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 90% at 30% 15%, rgba(255,255,255,0.28), transparent 55%)",
-        }}
-      />
-      {/* Faceted emblem watermark */}
-      <div
-        aria-hidden
-        className="absolute -right-6 -bottom-8 size-32 rotate-12 opacity-15"
-        style={{
-          clipPath:
-            "polygon(35% 5%, 65% 5%, 90% 40%, 50% 95%, 10% 40%)",
-          background: "rgba(255,255,255,0.9)",
-        }}
-      />
-      {/* Bottom shade so text stays legible */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 bottom-0 h-2/3"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.55), transparent)",
-        }}
-      />
+      {image ? (
+        <Image
+          src={image}
+          alt={name}
+          fill
+          sizes={sizes}
+          priority={priority}
+          className="object-cover"
+        />
+      ) : (
+        <>
+          {/* Radial sheen */}
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(120% 90% at 30% 15%, rgba(255,255,255,0.28), transparent 55%)",
+            }}
+          />
+          {/*
+            House artwork: the brand shield watermarked behind the name. A flat
+            gradient swatch reads as a missing image; stamped like this, a title
+            we have no art for still looks like part of the range.
+          */}
+          <Image
+            src="/images/emblem.webp"
+            alt=""
+            aria-hidden
+            fill
+            sizes="(min-width: 640px) 25vw, 50vw"
+            className="scale-[0.72] object-contain opacity-[0.18] mix-blend-luminosity"
+          />
+          {/* Faceted emblem watermark */}
+          <div
+            aria-hidden
+            className="absolute -right-6 -bottom-8 size-32 rotate-12 opacity-10"
+            style={{
+              clipPath: "polygon(35% 5%, 65% 5%, 90% 40%, 50% 95%, 10% 40%)",
+              background: "rgba(255,255,255,0.9)",
+            }}
+          />
+          {/* Bottom shade so text stays legible */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-2/3"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.55), transparent)",
+            }}
+          />
 
-      <div className="relative flex h-full flex-col items-center justify-center p-4 text-center">
-        <span
-          className={cn(
-            "font-display font-bold uppercase leading-none tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]",
-            compact ? "text-lg" : "text-2xl sm:text-3xl",
-          )}
-        >
-          {name}
-        </span>
-        {tagline && !compact && (
-          <span className="mt-2 rounded-full bg-black/30 px-2.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-white/90 backdrop-blur-sm">
-            {tagline}
-          </span>
-        )}
-      </div>
+          {/*
+            Type is sized in container-query units so a card reads correctly at
+            any size — a 100px card in the hero fan, a full-width tile on a
+            phone, or a wide event banner — without per-usage breakpoints.
+          */}
+          <div
+            className={cn(
+              "relative flex h-full flex-col items-center justify-center p-[6%] text-center",
+              align === "start" && "pr-[52%]",
+              align === "end" && "pl-[52%]",
+            )}
+          >
+            <span
+              className={cn(
+                "font-display font-bold uppercase leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]",
+                compact
+                  ? "text-[clamp(0.6rem,9cqw,1.125rem)]"
+                  : "text-[clamp(0.85rem,11cqw,1.875rem)]",
+              )}
+            >
+              {name}
+            </span>
+            {tagline && !compact && (
+              <span className="mt-2 rounded-full bg-black/30 px-2.5 py-0.5 text-[clamp(0.5rem,3.4cqw,0.65rem)] font-semibold uppercase tracking-[0.18em] text-white/90 backdrop-blur-sm">
+                {tagline}
+              </span>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

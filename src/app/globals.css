@@ -82,6 +82,80 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
+
+  /*
+    Fluid type scale.
+
+    Every step interpolates between a 360px phone and a 1280px desktop (the
+    Container's max width), so text grows with the viewport instead of jumping
+    at breakpoints — no `sm:text-3xl lg:text-6xl` ladders needed.
+
+    Each clamp keeps a rem term alongside the vw term, so the sizes still
+    respond to the reader's browser font-size setting (WCAG 1.4.4). A pure-vw
+    font-size would ignore it.
+
+    The `--text-control-*` steps below cover UI chrome (buttons, menu items).
+    They move on a deliberately narrow range — a label should stay a label, not
+    grow into a heading — and each button size picks its own step, so a large
+    CTA reads bigger than a compact one at every width.
+
+    Inputs are the exception and stay off this scale entirely: they must hold
+    at 16px on mobile or iOS zooms the page on focus (see `input.tsx`,
+    `textarea.tsx`, which run `text-base md:text-sm`).
+  */
+
+  /* Hero headline — the one piece of type allowed to get big. 32 → 64px */
+  --text-display: clamp(2rem, 1.217rem + 3.478vw, 4rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.02em;
+
+  /* Page titles. 28 → 48px */
+  --text-h1: clamp(1.75rem, 1.261rem + 2.174vw, 3rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.02em;
+
+  /* Section headings. 20 → 30px */
+  --text-h2: clamp(1.25rem, 1.005rem + 1.087vw, 1.875rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.02em;
+
+  /* Sub-section and panel headings. 17 → 20px */
+  --text-h3: clamp(1.0625rem, 0.989rem + 0.326vw, 1.25rem);
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.01em;
+
+  /* Intro paragraph under a title. 16 → 20px */
+  --text-lead: clamp(1rem, 0.902rem + 0.435vw, 1.25rem);
+  --text-lead--line-height: 1.55;
+
+  /* Default body copy and card titles. 15 → 16px */
+  --text-body: clamp(0.9375rem, 0.913rem + 0.109vw, 1rem);
+  --text-body--line-height: 1.65;
+
+  /* Secondary copy, metadata, list rows. 13 → 14px */
+  --text-body-sm: clamp(0.8125rem, 0.788rem + 0.109vw, 0.875rem);
+  --text-body-sm--line-height: 1.55;
+
+  /* Fine print. 11 → 12px */
+  --text-caption: clamp(0.6875rem, 0.663rem + 0.109vw, 0.75rem);
+  --text-caption--line-height: 1.45;
+
+  /* Uppercase tracked labels above a heading or beside an icon. 12 → 13px */
+  --text-eyebrow: clamp(0.75rem, 0.726rem + 0.109vw, 0.8125rem);
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.1em;
+
+  /* Prominent CTAs — the `lg` button size. 15 → 16px */
+  --text-control-lg: clamp(0.9375rem, 0.913rem + 0.109vw, 1rem);
+  --text-control-lg--line-height: 1.2;
+
+  /* Default button and menu-item labels. 14 → 15px */
+  --text-control: clamp(0.875rem, 0.851rem + 0.109vw, 0.9375rem);
+  --text-control--line-height: 1.2;
+
+  /* Compact controls — the `sm` button size, chips. 13 → 14px */
+  --text-control-sm: clamp(0.8125rem, 0.788rem + 0.109vw, 0.875rem);
+  --text-control-sm--line-height: 1.2;
 }
 
 @layer base {
@@ -91,13 +165,42 @@
 
   html {
     scroll-behavior: smooth;
+    /*
+      Mobile Safari/Chrome inflate text in landscape unless this is pinned.
+      100% (not `none`) so pinch-zoom still works.
+    */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans), system-ui, sans-serif;
+    /* Anything without an explicit size inherits the fluid body step. */
+    font-size: var(--text-body);
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+    Headings get even line lengths; body copy avoids a one-word last line.
+    Both degrade to normal wrapping where unsupported.
+  */
+  :is(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /*
+    A long set name, email, or URL should wrap rather than push the page wider
+    than the phone — the usual cause of stray horizontal scroll.
+  */
+  :is(h1, h2, h3, h4, p, li, dd, a) {
+    overflow-wrap: break-word;
   }
 
   ::selection {
@@ -131,6 +234,11 @@
     border-color: color-mix(in srgb, var(--brand) 40%, transparent);
   }
 
+  /* Hero fan cards glide to their new slot when the deck is rotated. */
+  .fan-card {
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   /* Text with a soft emerald glow — used for the accent keyword in headings */
   .text-glow {
     color: var(--brand);
@@ -138,11 +246,22 @@
   }
 }
 
+/* Mobile carousels scroll by swipe — the bar is noise on a phone. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-  .glow-card {
+  .glow-card,
+  .fan-card {
     transition: none;
   }
 }

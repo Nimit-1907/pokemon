@@ -12,8 +12,12 @@ export interface Collection {
   tagline: string;
   /** Longer blurb for the collection page header */
   description: string;
-  /** Emerald-tinted gradient used for the placeholder art (from/to) */
+  /** Emerald-tinted gradient — the fallback when there's no artwork */
   gradient: { from: string; to: string };
+  /** Square poster art for cards and tiles. Optional: not every line has art */
+  image?: string;
+  /** Wide banner art for page headers and event cards */
+  banner?: string;
   /** Product categories for the sidebar filter */
   categories: string[];
 }
@@ -25,7 +29,10 @@ export interface Product {
   category: string;
   type: string;
   price: number;
+  /** Fallback treatment when there's no product photo */
   gradient: { from: string; to: string };
+  /** Product photo, e.g. "/images/products/crown-zenith.webp" */
+  image?: string;
 }
 
 export interface StoreEvent {

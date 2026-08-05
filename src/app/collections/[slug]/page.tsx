@@ -51,7 +51,7 @@ export default async function CollectionPage(
         <Container className="py-10 sm:py-14">
           <Link
             href="/collections"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-brand"
+            className="inline-flex items-center gap-1.5 text-body-sm text-muted-foreground transition-colors hover:text-brand"
           >
             <ArrowLeft className="size-4" />
             Back to Collections
@@ -59,11 +59,11 @@ export default async function CollectionPage(
 
           <div className="mt-6 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl">
-              <h1 className="font-display text-4xl font-bold uppercase tracking-tight text-foreground sm:text-5xl">
+              <h1 className="font-display text-h1 font-bold uppercase text-foreground">
                 {collection.name}{" "}
                 <span className="text-glow">Collection</span>
               </h1>
-              <p className="mt-4 text-muted-foreground">
+              <p className="mt-4 text-lead text-muted-foreground">
                 {collection.description}
               </p>
             </div>
@@ -71,6 +71,9 @@ export default async function CollectionPage(
               name={collection.name}
               tagline={collection.tagline}
               gradient={collection.gradient}
+              image={collection.banner}
+              sizes="(min-width: 768px) 320px, 100vw"
+              priority
               className="h-40 w-full shrink-0 rounded-xl md:w-80"
             />
           </div>

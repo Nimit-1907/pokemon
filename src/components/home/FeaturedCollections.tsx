@@ -6,7 +6,7 @@ import { collections } from "@/lib/data";
 
 export function FeaturedCollections() {
   return (
-    <section className="py-16 sm:py-20">
+    <section className="py-12 sm:py-16 lg:py-20">
       <Container>
         <Reveal>
           <SectionHeading
@@ -15,7 +15,7 @@ export function FeaturedCollections() {
             viewAllLabel="View All Collections"
           />
         </Reveal>
-        <StaggerGrid className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <StaggerGrid className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {collections.map((collection) => (
             <StaggerItem key={collection.slug}>
               <CollectionCard collection={collection} />

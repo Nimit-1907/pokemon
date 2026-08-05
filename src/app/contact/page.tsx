@@ -25,10 +25,10 @@ export default function ContactPage() {
           }}
         />
         <Container className="py-14 text-center sm:py-20">
-          <h1 className="font-display text-4xl font-bold uppercase tracking-tight text-foreground sm:text-5xl">
+          <h1 className="font-display text-h1 font-bold uppercase text-foreground">
             Get in <span className="text-glow">Touch</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-xl text-lead text-muted-foreground">
             Questions about a product, an event, or a special order? Drop by the
             shop or send us a message — we&apos;re happy to help.
           </p>
@@ -67,7 +67,7 @@ export default function ContactPage() {
               </ul>
 
               <div>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                <h3 className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-muted-foreground">
                   Follow Us
                 </h3>
                 <SocialLinks />
@@ -103,10 +103,10 @@ function InfoRow({
         {icon}
       </span>
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="text-eyebrow font-semibold uppercase text-muted-foreground">
           {label}
         </p>
-        <p className="mt-0.5 text-foreground">{children}</p>
+        <p className="mt-0.5 text-body text-foreground">{children}</p>
       </div>
     </li>
   );

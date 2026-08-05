@@ -39,9 +39,14 @@ export function CollectionProducts({
 
   return (
     <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
-      {/* Sidebar categories */}
-      <aside className="lg:sticky lg:top-24 lg:self-start">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+      {/*
+        Sidebar categories. `min-w-0` is load-bearing: a grid item defaults to
+        `min-width: auto`, so on mobile the horizontally-scrolling chip row
+        below sized the whole column to its content and pushed the page ~300px
+        wider than the viewport.
+      */}
+      <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+        <h2 className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Categories
         </h2>
         <div className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
@@ -62,7 +67,7 @@ export function CollectionProducts({
                 {cat}
                 <span
                   className={cn(
-                    "hidden text-xs lg:inline",
+                    "hidden text-caption lg:inline",
                     active ? "text-brand/80" : "text-muted-foreground/60",
                   )}
                 >
@@ -87,7 +92,7 @@ export function CollectionProducts({
               className="pl-9"
             />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-body-sm text-muted-foreground">
             {filtered.length}{" "}
             {filtered.length === 1 ? "product" : "products"}
           </p>
@@ -102,8 +107,10 @@ export function CollectionProducts({
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20 text-center">
             <PackageOpen className="size-10 text-muted-foreground/50" />
-            <p className="mt-4 font-medium text-foreground">No products found</p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-4 text-h3 font-semibold text-foreground">
+              No products found
+            </p>
+            <p className="mt-1 text-body-sm text-muted-foreground">
               Try a different category or search term.
             </p>
           </div>

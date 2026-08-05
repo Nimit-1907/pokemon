@@ -40,8 +40,8 @@ function InfoCard({
       <span className="grid size-10 place-items-center rounded-lg bg-brand/10 text-brand">
         {icon}
       </span>
-      <h3 className="mt-4 font-semibold text-foreground">{title}</h3>
-      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+      <h3 className="mt-4 text-h3 font-semibold text-foreground">{title}</h3>
+      <p className="mt-1 text-body-sm text-muted-foreground">
         {children}
       </p>
     </div>

@@ -9,12 +9,12 @@ import { nav, site } from "@/lib/site";
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-border bg-[#080808]">
-      <Container className="py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <Container className="py-10 sm:py-14">
+        <div className="grid gap-8 sm:gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4">
             <BrandLogo />
-            <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
+            <p className="max-w-xs text-body-sm text-muted-foreground">
               {site.description}
             </p>
             <SocialLinks />
@@ -41,7 +41,7 @@ export function Footer() {
 
           {/* Visit */}
           <FooterCol title="Visit Us">
-            <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+            <li className="flex items-start gap-2.5 text-body-sm text-muted-foreground">
               <MapPin className="mt-0.5 size-4 shrink-0 text-brand" />
               <span>
                 {site.address.line}
@@ -49,11 +49,16 @@ export function Footer() {
                 {site.address.city}
               </span>
             </li>
-            <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
+            <li className="flex items-center gap-2.5 text-body-sm text-muted-foreground">
               <Phone className="size-4 shrink-0 text-brand" />
-              {site.phone}
+              <a
+                href={`tel:${site.phone.replace(/[^+\d]/g, "")}`}
+                className="py-1 transition-colors hover:text-brand"
+              >
+                {site.phone}
+              </a>
             </li>
-            <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+            <li className="flex items-start gap-2.5 text-body-sm text-muted-foreground">
               <Clock className="mt-0.5 size-4 shrink-0 text-brand" />
               <span>
                 {site.hours.map((h) => (
@@ -66,7 +71,7 @@ export function Footer() {
           </FooterCol>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-caption text-muted-foreground sm:flex-row">
           <p>
             © {new Date().getFullYear()} {site.name}. All rights reserved.
           </p>
@@ -86,7 +91,7 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
+      <h3 className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-foreground">
         {title}
       </h3>
       <ul className="space-y-2.5">{children}</ul>
@@ -99,7 +104,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
     <li>
       <Link
         href={href}
-        className="text-sm text-muted-foreground transition-colors hover:text-brand"
+        className="inline-block py-1 text-body-sm text-muted-foreground transition-colors hover:text-brand"
       >
         {children}
       </Link>

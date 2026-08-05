@@ -37,12 +37,12 @@ export function EventCalendar({ events }: { events: StoreEvent[] }) {
             key={`${year}-${month}`}
             className="rounded-xl border border-border bg-card p-5"
           >
-            <h3 className="mb-4 font-display text-lg font-bold uppercase tracking-tight text-foreground">
+            <h3 className="mb-4 font-display text-h3 font-bold uppercase text-foreground">
               {monthName(month)}{" "}
               <span className="text-muted-foreground">{year}</span>
             </h3>
 
-            <div className="mb-2 grid grid-cols-7 gap-1 text-center text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="mb-2 grid grid-cols-7 gap-1 text-center text-caption font-semibold uppercase tracking-wider text-muted-foreground">
               {WEEKDAY_LABELS.map((d, i) => (
                 <div key={i}>{d}</div>
               ))}
@@ -57,7 +57,7 @@ export function EventCalendar({ events }: { events: StoreEvent[] }) {
                   return (
                     <div
                       key={i}
-                      className="grid aspect-square place-items-center rounded-md text-sm text-muted-foreground/70"
+                      className="grid aspect-square place-items-center rounded-md text-body-sm text-muted-foreground/70"
                     >
                       {day}
                     </div>
@@ -70,7 +70,7 @@ export function EventCalendar({ events }: { events: StoreEvent[] }) {
                     href={`/events/${ev.slug}`}
                     title={`${ev.title} · ${ev.time}`}
                     className={cn(
-                      "grid aspect-square place-items-center rounded-md bg-brand/15 text-sm font-semibold text-brand ring-1 ring-brand/40 transition-all",
+                      "grid aspect-square place-items-center rounded-md bg-brand/15 text-body-sm font-semibold text-brand ring-1 ring-brand/40 transition-all",
                       "hover:bg-brand hover:text-brand-foreground hover:shadow-[0_0_16px_-4px_rgba(85,231,27,0.7)]",
                     )}
                   >

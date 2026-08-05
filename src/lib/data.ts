@@ -14,6 +14,8 @@ export const collections: Collection[] = [
     description:
       "Explore sealed products, singles, and accessories from the Pokémon TCG — from the newest Scarlet & Violet sets to classic chase cards.",
     gradient: { from: "#f5b342", to: "#b8341e" },
+    image: "/images/collections/pokemon.webp",
+    banner: "/images/banners/pokemon.webp",
     categories: [
       "All Products",
       "Booster Boxes",
@@ -30,6 +32,8 @@ export const collections: Collection[] = [
     description:
       "Booster boxes, starter decks, and singles from the fast-growing One Piece Card Game. Build your crew and battle for the One Piece.",
     gradient: { from: "#e23b3b", to: "#7a1414" },
+    image: "/images/collections/one-piece.webp",
+    banner: "/images/banners/one-piece.webp",
     categories: [
       "All Products",
       "Booster Boxes",
@@ -46,6 +50,8 @@ export const collections: Collection[] = [
     description:
       "The deepest trading card game in the world. Shop the latest sets, Commander decks, singles, and sealed product for every format.",
     gradient: { from: "#6b5b95", to: "#241b30" },
+    image: "/images/collections/magic.webp",
+    banner: "/images/banners/magic.webp",
     categories: [
       "All Products",
       "Booster Boxes",
@@ -62,6 +68,7 @@ export const collections: Collection[] = [
     description:
       "Collect and play with the magic of Disney. Illumineer's Trove, booster boxes, starter decks, and singles from Disney Lorcana.",
     gradient: { from: "#7c4dbd", to: "#2a1a4a" },
+    // No Lorcana artwork supplied yet — falls back to the gradient treatment.
     categories: [
       "All Products",
       "Booster Boxes",
@@ -78,6 +85,8 @@ export const collections: Collection[] = [
     description:
       "Basketball, football, soccer and more. Hobby boxes, blasters, and singles across the biggest brands in the sports card hobby.",
     gradient: { from: "#2f7fd1", to: "#123a63" },
+    image: "/images/collections/sports-cards.webp",
+    banner: "/images/banners/sports-cards.webp",
     categories: [
       "All Products",
       "Hobby Boxes",

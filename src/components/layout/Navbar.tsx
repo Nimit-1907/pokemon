@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { ChevronDown, Menu, ShoppingCart, User } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
@@ -56,25 +56,8 @@ export function Navbar() {
           </nav>
         </div>
 
-        {/* Actions */}
+        {/* Actions — cart and account are out until the store sells online. */}
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Cart"
-            className="text-muted-foreground hover:text-brand"
-          >
-            <ShoppingCart className="size-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Account"
-            className="text-muted-foreground hover:text-brand"
-          >
-            <User className="size-5" />
-          </Button>
-
           {/* Mobile trigger */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -110,7 +93,7 @@ export function Navbar() {
                   </SheetClose>
                 ))}
                 <div className="mt-2 border-t border-border pt-3">
-                  <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className="px-3 pb-1 text-eyebrow font-semibold uppercase text-muted-foreground">
                     Collections
                   </p>
                   {collections.map((c) => (

@@ -10,16 +10,18 @@ const repoBasePath = "/pokemon";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  /*
+    `next dev` blocks cross-origin requests to /_next dev assets by default, so
+    opening the LAN URL on a phone serves the HTML but not the JS/CSS chunks and
+    the page renders unstyled. Allow the local subnet — the wildcard keeps this
+    working when DHCP hands the machine a different address. Dev-only; it has no
+    effect on the static export.
+  */
+  allowedDevOrigins: ["192.168.1.*"],
   images: {
-    // Static export can't use the default image optimizer.
+    // Static export can't use the default image optimizer. Artwork in
+    // `public/images` is pre-sized by `scripts/optimize-images.mjs` instead.
     unoptimized: isGithubPages,
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-    ],
   },
   ...(isGithubPages
     ? {

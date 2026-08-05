@@ -42,7 +42,7 @@ export default async function EventPage(props: PageProps<"/events/[slug]">) {
       <Container className="py-10 sm:py-14">
         <Link
           href="/events"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-brand"
+          className="inline-flex items-center gap-1.5 text-body-sm text-muted-foreground transition-colors hover:text-brand"
         >
           <ArrowLeft className="size-4" />
           Back to Events
@@ -55,27 +55,30 @@ export default async function EventPage(props: PageProps<"/events/[slug]">) {
               <CardArt
                 name={collection?.name ?? event.title}
                 gradient={event.gradient}
+                image={collection?.banner}
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                priority
                 className="aspect-video w-full"
               />
               <div className="absolute left-4 top-4 flex flex-col items-center rounded-xl border border-border/60 bg-background/90 px-4 py-2 backdrop-blur-sm">
-                <span className="text-xs font-bold uppercase tracking-widest text-brand">
+                <span className="text-eyebrow font-bold uppercase text-brand">
                   {month}
                 </span>
-                <span className="font-display text-2xl font-bold leading-none text-foreground">
+                <span className="font-display text-h2 font-bold leading-none text-foreground">
                   {day}
                 </span>
               </div>
             </div>
 
             {collection && (
-              <span className="mt-6 inline-block rounded-full border border-brand/40 bg-brand/5 px-3 py-1 text-xs font-medium text-brand">
+              <span className="mt-6 inline-block rounded-full border border-brand/40 bg-brand/5 px-3 py-1 text-body-sm font-medium text-brand">
                 {collection.name}
               </span>
             )}
-            <h1 className="mt-3 font-display text-3xl font-bold uppercase tracking-tight text-foreground sm:text-4xl">
+            <h1 className="mt-3 font-display text-h1 font-bold uppercase text-foreground">
               {event.title}
             </h1>
-            <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-lead text-muted-foreground">
               {event.description}
             </p>
           </div>
@@ -83,7 +86,7 @@ export default async function EventPage(props: PageProps<"/events/[slug]">) {
           {/* Details sidebar */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="glow-ring rounded-2xl border bg-card p-6">
-              <h2 className="mb-4 font-display text-lg font-bold uppercase tracking-tight text-foreground">
+              <h2 className="mb-4 font-display text-h3 font-bold uppercase text-foreground">
                 Event Details
               </h2>
               <dl className="space-y-4">
@@ -134,10 +137,10 @@ function DetailRow({
         {icon}
       </span>
       <div>
-        <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <dt className="text-eyebrow font-semibold uppercase text-muted-foreground">
           {label}
         </dt>
-        <dd className="mt-0.5 text-sm text-foreground">{children}</dd>
+        <dd className="mt-0.5 text-body-sm text-foreground">{children}</dd>
       </div>
     </div>
   );

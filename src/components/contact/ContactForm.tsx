@@ -18,10 +18,10 @@ export function ContactForm() {
     return (
       <div className="glow-ring flex flex-col items-center justify-center rounded-2xl border p-10 text-center">
         <CheckCircle2 className="size-12 text-brand" />
-        <h3 className="mt-4 font-display text-xl font-bold uppercase tracking-tight text-foreground">
+        <h3 className="mt-4 font-display text-h2 font-bold uppercase text-foreground">
           Message sent
         </h3>
-        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+        <p className="mt-2 max-w-sm text-body-sm text-muted-foreground">
           Thanks for reaching out — we&apos;ll get back to you within one
           business day.
         </p>
