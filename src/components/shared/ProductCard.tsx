@@ -1,9 +1,7 @@
-import { ShoppingCart } from "lucide-react";
 import { CardArt } from "@/components/shared/CardArt";
-import { Button } from "@/components/ui/button";
 import type { Product } from "@/types";
 
-/** Product tile: photo (or gradient stand-in), name, type, Add to Cart. */
+/** Product tile: photo (or gradient stand-in), name, type. */
 export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="glow-card group flex h-full flex-col overflow-hidden rounded-xl">
@@ -20,10 +18,6 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </h3>
         <p className="text-caption text-muted-foreground">{product.type}</p>
-        <Button size="sm" className="mt-3 w-full font-semibold">
-          <ShoppingCart className="size-4" />
-          Add to Cart
-        </Button>
       </div>
     </div>
   );

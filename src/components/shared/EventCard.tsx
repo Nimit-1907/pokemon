@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Clock, Ticket } from "lucide-react";
+import { Clock } from "lucide-react";
 import { CardArt } from "@/components/shared/CardArt";
 import { Button } from "@/components/ui/button";
 import { eventDateParts } from "@/lib/format";
 import { getCollection } from "@/lib/data";
 import type { StoreEvent } from "@/types";
 
-/** Upcoming-event tile: date badge over art, title, time/entry, details CTA. */
+/** Upcoming-event tile: date badge over art, title, time, details CTA. */
 export function EventCard({ event }: { event: StoreEvent }) {
   const { month, day } = eventDateParts(event.date);
   const collection = getCollection(event.collection);
@@ -41,10 +41,6 @@ export function EventCard({ event }: { event: StoreEvent }) {
           <span className="inline-flex items-center gap-1.5">
             <Clock className="size-4 text-brand" />
             {event.time}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Ticket className="size-4 text-brand" />
-            {event.entry}
           </span>
         </div>
         <Button

@@ -49,7 +49,18 @@ export function CollectionProducts({
         <h2 className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Categories
         </h2>
-        <div className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
+        {/*
+          On mobile the categories are a scrolling chip row. It bleeds to both
+          screen edges so a chip cut by the viewport reads as "there's more
+          this way" rather than as a clipped layout; the gutter is restored as
+          scroll padding so the first chip still lines up with the page.
+        */}
+        {/*
+          `overflow-x: auto` also clips vertically, so the row needs padding for
+          the active chip's outset ring — with none, its top line is shaved off.
+          The negative margin cancels that padding so spacing is unchanged.
+        */}
+        <div className="no-scrollbar -mx-4 -my-1 flex scroll-pl-4 gap-2 overflow-x-auto px-4 py-1 sm:-mx-6 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:my-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:py-0">
           {collection.categories.map((cat) => {
             const active = category === cat;
             return (
@@ -58,7 +69,8 @@ export function CollectionProducts({
                 type="button"
                 onClick={() => setCategory(cat)}
                 className={cn(
-                  "flex shrink-0 items-center justify-between gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors lg:w-full",
+                  // Matches the default button height on touch, then tightens.
+                  "flex h-10 shrink-0 items-center justify-between gap-2 whitespace-nowrap rounded-lg px-3 text-control font-medium transition-colors lg:h-9 lg:w-full",
                   active
                     ? "bg-brand/15 text-brand ring-1 ring-brand/40"
                     : "text-muted-foreground hover:bg-accent hover:text-foreground",
@@ -67,7 +79,7 @@ export function CollectionProducts({
                 {cat}
                 <span
                   className={cn(
-                    "hidden text-caption lg:inline",
+                    "text-caption",
                     active ? "text-brand/80" : "text-muted-foreground/60",
                   )}
                 >
@@ -105,7 +117,7 @@ export function CollectionProducts({
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20 text-center">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-14 text-center sm:py-20">
             <PackageOpen className="size-10 text-muted-foreground/50" />
             <p className="mt-4 text-h3 font-semibold text-foreground">
               No products found

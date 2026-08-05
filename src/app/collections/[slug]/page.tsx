@@ -34,7 +34,8 @@ export default async function CollectionPage(
   const collection = getCollection(slug);
   if (!collection) notFound();
 
-  const products = getProductsByCollection(slug);
+  // Showing a short sample per collection for now, not the full catalogue.
+  const products = getProductsByCollection(slug).slice(0, 3);
 
   return (
     <>

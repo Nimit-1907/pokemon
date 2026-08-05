@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Container } from "@/components/layout/Container";
@@ -20,6 +20,9 @@ const copyItem: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
+/** How long a card is held at the front before the fan deals the next one. */
+const AUTOPLAY_MS = 3000;
+
 export function Hero() {
   // Which card is held at the front of the fan; starts on the middle one.
   const [active, setActive] = useState(FAN_CENTER);
@@ -28,6 +31,21 @@ export function Hero() {
   // With reduced motion, render everything statically.
   const container = reduce ? undefined : copyContainer;
   const item = reduce ? undefined : copyItem;
+
+  /*
+    Deal the next card on a timer. The effect is keyed on `active`, so picking
+    a dot or swiping the fan restarts the full countdown instead of leaving
+    whatever was left of the previous one. Reduced motion opts out entirely —
+    the fan then only moves when someone asks it to.
+  */
+  useEffect(() => {
+    if (reduce) return;
+    const id = setTimeout(
+      () => setActive((i) => (i + 1) % fanCards.length),
+      AUTOPLAY_MS,
+    );
+    return () => clearTimeout(id);
+  }, [active, reduce]);
 
   return (
     <section className="relative overflow-hidden border-b border-border">

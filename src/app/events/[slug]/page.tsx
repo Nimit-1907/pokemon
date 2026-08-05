@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CalendarDays, Clock, MapPin, Ticket } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, MapPin } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { CardArt } from "@/components/shared/CardArt";
 import { Button } from "@/components/ui/button";
@@ -96,23 +96,26 @@ export default async function EventPage(props: PageProps<"/events/[slug]">) {
                 <DetailRow icon={<Clock className="size-4" />} label="Time">
                   {event.time}
                 </DetailRow>
-                <DetailRow icon={<Ticket className="size-4" />} label="Entry">
-                  {event.entry}
-                </DetailRow>
                 <DetailRow icon={<MapPin className="size-4" />} label="Location">
                   {event.location}
                 </DetailRow>
               </dl>
 
-              <Button className="mt-6 w-full font-semibold" size="lg">
+              {/*
+                Both inert for now. The second was an `asChild` link — an
+                anchor ignores `disabled`, so it renders as a real button
+                instead, which also gets the native disabled semantics.
+              */}
+              <Button size="lg" className="mt-6 w-full font-semibold" disabled>
                 Register Interest
               </Button>
               <Button
-                asChild
+                size="lg"
                 variant="outline"
-                className="mt-3 w-full hover:text-brand"
+                className="mt-3 w-full font-semibold"
+                disabled
               >
-                <Link href="/contact">Contact the Store</Link>
+                Contact the Store
               </Button>
             </div>
           </aside>
