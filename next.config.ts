@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
     // `public/images` is pre-sized by `scripts/optimize-images.mjs` instead.
     unoptimized: isGithubPages,
   },
+  env: {
+    /*
+      `basePath` is applied to next/link automatically but NOT to next/image —
+      its `src` has to carry the prefix itself. Publishing the value here keeps
+      next.config the only place that knows the repo path; `asset()` in
+      src/lib/asset.ts reads it. Empty off Pages, so dev is unaffected.
+    */
+    NEXT_PUBLIC_BASE_PATH: isGithubPages ? repoBasePath : "",
+  },
   ...(isGithubPages
     ? {
         output: "export",

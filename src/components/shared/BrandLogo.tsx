@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 
 /** The Emerald Cards & Games wordmark: shield mark + stacked name. */
@@ -12,7 +13,7 @@ export function BrandLogo({ className }: { className?: string }) {
     >
       <span className="relative grid size-9 shrink-0 place-items-center">
         <Image
-          src="/images/logo.webp"
+          src={asset("/images/logo.webp")}
           alt=""
           aria-hidden
           width={72}

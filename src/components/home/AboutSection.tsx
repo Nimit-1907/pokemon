@@ -6,9 +6,10 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/button";
+import { asset } from "@/lib/asset";
 import { site } from "@/lib/site";
 
-const STORE_IMAGE = "/images/store-home.webp";
+const STORE_IMAGE = asset("/images/store-home.webp");
 
 export function AboutSection() {
   return (

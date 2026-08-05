@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 
 /**
@@ -43,7 +44,7 @@ export function CardArt({
     >
       {image ? (
         <Image
-          src={image}
+          src={asset(image)}
           alt={name}
           fill
           sizes={sizes}
@@ -67,7 +68,7 @@ export function CardArt({
             we have no art for still looks like part of the range.
           */}
           <Image
-            src="/images/emblem.webp"
+            src={asset("/images/emblem.webp")}
             alt=""
             aria-hidden
             fill

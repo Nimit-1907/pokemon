@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { ArrowRight, Calendar } from "lucide-react";
@@ -55,7 +56,7 @@ export function Hero() {
         second wordmark competing with the headline.
       */}
       <Image
-        src="/images/hero-backdrop.webp"
+        src={asset("/images/hero-backdrop.webp")}
         alt=""
         aria-hidden
         fill

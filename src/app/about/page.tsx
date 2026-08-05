@@ -8,6 +8,7 @@ import { StoreInfoCards } from "@/components/shared/StoreInfoCards";
 import { MapEmbed } from "@/components/shared/MapEmbed";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 import { Button } from "@/components/ui/button";
+import { asset } from "@/lib/asset";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   description: site.description,
 };
 
-const STORE_IMAGE = "/images/store-about.webp";
+const STORE_IMAGE = asset("/images/store-about.webp");
 
 const features = [
   {
