@@ -5,10 +5,12 @@ import { cn } from "@/lib/utils";
 /**
  * Collection/event artwork.
  *
- * With `image` it renders the real artwork; the name is left to the art, which
- * already carries its own lockup. Without one it falls back to the on-brand
- * gradient stand-in with the name set in the display face — collections we
+ * With `image` it renders the real artwork. Without one it falls back to the
+ * on-brand gradient stand-in with the name set in the display face — titles we
  * don't have art for still look deliberate rather than broken.
+ *
+ * The artwork carries no text of its own, so anywhere the surrounding layout
+ * doesn't already print the title, pass `labelled` to caption it.
  */
 export function CardArt({
   name,
@@ -22,6 +24,7 @@ export function CardArt({
   /** Where the lockup sits — useful when a card is partly overlapped. */
   align = "center",
   imageFit = "cover",
+  labelled = false,
 }: {
   name: string;
   tagline?: string;
@@ -41,6 +44,11 @@ export function CardArt({
    * lockup, so they `contain` and let the gradient show around them.
    */
   imageFit?: "cover" | "contain";
+  /**
+   * Caption the artwork with `name`. Only needed where nothing beside the card
+   * names it — the hero fan, mainly; tiles and headers print their own title.
+   */
+  labelled?: boolean;
 }) {
   return (
     <div
@@ -78,6 +86,25 @@ export function CardArt({
                 : "object-cover"
             }
           />
+          {labelled && (
+            /*
+              Scrim first, then the name — illustration runs edge to edge, so
+              type set straight onto it is unreadable over a bright panel.
+              Sized in container-query units to match the gradient fallback.
+            */
+            <div className="absolute inset-x-0 bottom-0 flex flex-col items-center bg-gradient-to-t from-black/80 via-black/45 to-transparent p-[7%] pt-[18%] text-center">
+              <span
+                className={cn(
+                  "font-display font-bold uppercase leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]",
+                  compact
+                    ? "text-[clamp(0.55rem,8cqw,1rem)]"
+                    : "text-[clamp(0.8rem,10cqw,1.75rem)]",
+                )}
+              >
+                {name}
+              </span>
+            </div>
+          )}
         </>
       ) : (
         <>

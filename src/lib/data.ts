@@ -79,7 +79,8 @@ export const collections: Collection[] = [
     description:
       "Collect and play with the magic of Disney. Illumineer's Trove, booster boxes, starter decks, and singles from Disney Lorcana.",
     gradient: { from: "#7c4dbd", to: "#2a1a4a" },
-    // No Lorcana artwork supplied yet — falls back to the gradient treatment.
+    image: "/images/collections/disney-lorcana.webp",
+    banner: "/images/banners/disney-lorcana.webp",
     categories: [
       "All Products",
       "Booster Boxes",
@@ -257,13 +258,13 @@ export const products: Product[] = [
   { id: "dl-7", name: "Card Portfolio Binder", collection: "disney-lorcana", category: "Accessories", type: "Accessory", price: 18.99, gradient: { from: "#3fae14", to: "#123a08" } },
 
   // Sports Cards
-  { id: "sp-1", name: "Prizm Basketball", collection: "sports-cards", category: "Hobby Boxes", type: "Hobby Box", price: 399.99, gradient: { from: "#2f7fd1", to: "#123a63" } },
-  { id: "sp-2", name: "Panini Select Football", collection: "sports-cards", category: "Hobby Boxes", type: "Hobby Box", price: 349.99, gradient: { from: "#1f9c6b", to: "#0c3a28" } },
-  { id: "sp-3", name: "Topps Chrome Soccer", collection: "sports-cards", category: "Hobby Boxes", type: "Hobby Box", price: 289.99, gradient: { from: "#c0392b", to: "#3a100c" } },
-  { id: "sp-4", name: "Mosaic Blaster", collection: "sports-cards", category: "Blaster Boxes", type: "Blaster Box", price: 34.99, gradient: { from: "#8a5cd1", to: "#2a1a4a" } },
-  { id: "sp-5", name: "Optic Blaster", collection: "sports-cards", category: "Blaster Boxes", type: "Blaster Box", price: 29.99, gradient: { from: "#c9a227", to: "#3a2c08" } },
-  { id: "sp-6", name: "Rookie Auto — RC", collection: "sports-cards", category: "Singles", type: "Single Card", price: 74.99, gradient: { from: "#2f7fd1", to: "#0c2438" } },
-  { id: "sp-7", name: "Toploaders (25ct)", collection: "sports-cards", category: "Supplies", type: "Supply", price: 8.99, gradient: { from: "#3fae14", to: "#123a08" } },
+  { id: "sp-1", name: "Prizm Basketball", collection: "sports-cards", category: "Hobby Boxes", type: "Hobby Box", price: 399.99, gradient: { from: "#2f7fd1", to: "#123a63" }, image: "/images/products/sp-1.webp" },
+  { id: "sp-2", name: "Panini Select Football", collection: "sports-cards", category: "Hobby Boxes", type: "Hobby Box", price: 349.99, gradient: { from: "#1f9c6b", to: "#0c3a28" }, image: "/images/products/sp-2.webp" },
+  { id: "sp-3", name: "Topps Chrome Soccer", collection: "sports-cards", category: "Hobby Boxes", type: "Hobby Box", price: 289.99, gradient: { from: "#c0392b", to: "#3a100c" }, image: "/images/products/sp-3.webp" },
+  { id: "sp-4", name: "Mosaic Blaster", collection: "sports-cards", category: "Blaster Boxes", type: "Blaster Box", price: 34.99, gradient: { from: "#8a5cd1", to: "#2a1a4a" }, image: "/images/products/sp-4.webp" },
+  { id: "sp-5", name: "Optic Blaster", collection: "sports-cards", category: "Blaster Boxes", type: "Blaster Box", price: 29.99, gradient: { from: "#c9a227", to: "#3a2c08" }, image: "/images/products/sp-5.webp" },
+  { id: "sp-6", name: "Rookie Auto — RC", collection: "sports-cards", category: "Singles", type: "Single Card", price: 74.99, gradient: { from: "#2f7fd1", to: "#0c2438" }, image: "/images/products/sp-6.webp" },
+  { id: "sp-7", name: "Toploaders (25ct)", collection: "sports-cards", category: "Supplies", type: "Supply", price: 8.99, gradient: { from: "#3fae14", to: "#123a08" }, image: "/images/products/sp-7.webp" },
 ];
 
 export function getProductsByCollection(slug: string): Product[] {

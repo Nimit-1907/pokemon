@@ -21,7 +21,7 @@
  * One Piece is the awkward one: Bandai stamps a "SAMPLE" band across the middle
  * of every official English card image, and every free mirror is scraped from
  * Bandai, so the stamp is unavoidable. Those cards are art-cropped to the panel
- * *above* the band instead of used whole — see `OP_ART_CROP`.
+ * *above* the band instead of used whole — see `ART_CROPS.onePiece`.
  *
  * Sports cards and accessories have no free art source and are deliberately
  * absent — those tiles keep the gradient treatment.
@@ -32,21 +32,20 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import {
+  ART_CROPS,
+  get,
+  limitlessOnePieceUrl,
+  openversePhoto,
+  pause,
+  ptcgCardUrl,
+} from "./lib/art-sources.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(root, "public/images/products");
 
 /** Tiles are square and ~20vw at the widest breakpoint; 600px covers 2x. */
 const WIDTH = 600;
-
-/*
-  The illustration panel of a One Piece card, as fractions of the scan.
-
-  Bandai's SAMPLE band starts around 44% down, so the crop stops well short of
-  it. The top is taken from 9.5% rather than 0 to clear the power value and
-  attribute icon printed over the art.
-*/
-const OP_ART_CROP = { left: 0.035, top: 0.095, width: 0.93, height: 0.325 };
 
 /*
   Product id -> where its art comes from.
@@ -105,42 +104,23 @@ const SOURCES = {
     where the first hit is a poor crop or an odd subject.
   */
   "sp-1": { via: "openverse", q: "basketball dunk", pick: 0 },
-  "sp-2": { via: "openverse", q: "american football game", pick: 0 },
-  "sp-3": { via: "openverse", q: "soccer football match", pick: 0 },
-  "sp-4": { via: "openverse", q: "basketball court player", pick: 1 },
+  "sp-2": { via: "openverse", q: "american football players tackle", pick: 2 },
+  "sp-3": { via: "openverse", q: "soccer player ball action", pick: 0 },
+  "sp-4": { via: "openverse", q: "basketball player shooting", pick: 1 },
   "sp-5": { via: "openverse", q: "american football quarterback", pick: 1 },
   "sp-6": { via: "openverse", q: "baseball batter", pick: 0 },
-  "sp-7": { via: "openverse", q: "trading card album", pick: 0 },
+  /*
+    NOT "trading card album" — that query surfaces WWII-era cigarette-card
+    albums, including Nazi propaganda sets. Openverse is an unvetted index;
+    every pick here has been eyeballed before being committed.
+  */
+  "sp-7": { via: "openverse", q: "ice hockey players puck", pick: 3 },
 };
-
-/** Fetch with retry — the Pokémon API in particular 500s under load. */
-async function get(url, { json = false, tries = 4 } = {}) {
-  let lastErr;
-  for (let attempt = 1; attempt <= tries; attempt++) {
-    try {
-      const res = await fetch(url, {
-        headers: {
-          // Scryfall's guidelines ask for an identifying UA and Accept header.
-          "User-Agent": "EmeraldCardsAndGames/1.0 (placeholder art fetch)",
-          Accept: json ? "application/json" : "image/*",
-        },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return json ? await res.json() : Buffer.from(await res.arrayBuffer());
-    } catch (err) {
-      lastErr = err;
-      // Linear backoff; also keeps us well under Scryfall's rate limit.
-      await new Promise((r) => setTimeout(r, 400 * attempt));
-    }
-  }
-  throw new Error(`${url} — ${lastErr.message}`);
-}
 
 const RESOLVERS = {
   ptcgLogo: async (s) => `https://images.pokemontcg.io/${s.set}/logo.png`,
 
-  ptcgCard: async (s) =>
-    `https://images.pokemontcg.io/${s.set}/${s.number}_hires.png`,
+  ptcgCard: async (s) => ptcgCardUrl(`${s.set}/${s.number}`),
 
   scryfallNamed: async (s) => {
     const card = await get(
@@ -166,13 +146,8 @@ const RESOLVERS = {
     preserve, so these are cropped to fill the tile rather than contained.
   */
   openverse: async (s) => {
-    const res = await get(
-      `https://api.openverse.org/v1/images/?q=${encodeURIComponent(s.q)}` +
-        `&license_type=commercial&size=large&page_size=8`,
-      { json: true },
-    );
-    const hit = (res.results ?? []).filter((r) => r.url)[s.pick ?? 0];
-    return hit && { url: hit.url, square: true, credit: hit.license };
+    const url = await openversePhoto(s.q, s.pick);
+    return url && { url, square: true };
   },
 
   lorcast: async (s) => {
@@ -194,7 +169,7 @@ const RESOLVERS = {
     const best = pool.sort(
       (a, b) => (b.market_price ?? 0) - (a.market_price ?? 0),
     )[0];
-    return limitlessOnePiece(best?.card_set_id);
+    return onePiecePanel(best?.card_set_id);
   },
 
   optcgDeck: async (s) => {
@@ -208,25 +183,16 @@ const RESOLVERS = {
         (!s.prefer || c.card_type === s.prefer) &&
         (!s.name || c.card_name.includes(s.name)),
     );
-    return limitlessOnePiece(
+    return onePiecePanel(
       (pool.length ? pool : cards.filter((c) => c.card_set_id))[0]?.card_set_id,
     );
   },
 };
 
-/**
- * optcgapi is the card *list* — its own scans carry the SAMPLE band and its
- * parallel-art ids (`OP01-120_p2`) have no clean equivalent, so the base card
- * is fetched from the Limitless CDN and cropped to its illustration panel.
- */
-function limitlessOnePiece(cardSetId) {
-  if (!cardSetId) return null;
-  const base = cardSetId.split("_")[0];
-  const set = base.split("-")[0];
-  return {
-    url: `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/one-piece/${set}/${base}_EN.webp`,
-    crop: OP_ART_CROP,
-  };
+/** A One Piece scan plus the crop that takes the art above the SAMPLE band. */
+function onePiecePanel(cardSetId) {
+  const url = limitlessOnePieceUrl(cardSetId);
+  return url && { url, crop: ART_CROPS.onePiece };
 }
 
 async function run() {
@@ -236,8 +202,12 @@ async function run() {
 
   let ok = 0;
   const failed = [];
+  let first = true;
 
   for (const id of ids) {
+    // Space the requests out — see the backoff note in `get`.
+    if (!first) await pause();
+    first = false;
     const source = SOURCES[id];
     if (!source) {
       failed.push(`${id} — no source mapped`);
@@ -246,7 +216,8 @@ async function run() {
     try {
       const resolved = await RESOLVERS[source.via](source);
       if (!resolved) throw new Error("source returned no image");
-      const { url, crop } = typeof resolved === "string" ? { url: resolved } : resolved;
+      const { url, crop, square } =
+        typeof resolved === "string" ? { url: resolved } : resolved;
       const raw = await get(url);
 
       let pipeline = sharp(raw);
@@ -266,11 +237,11 @@ async function run() {
         tile's gradient — CardArt already paints that behind the image, so
         there's nothing to composite here.
 
-        Cropped art is squared off (`cover`) and rounded, so it reads as a
-        deliberate art panel beside the full card scans rather than as a
-        letterboxed strip. Everything else keeps its own aspect.
+        Cropped art and photographs are squared off (`cover`) and rounded, so
+        they read as deliberate art panels beside the full card scans rather
+        than as letterboxed strips. Card scans keep their own aspect.
       */
-      pipeline = crop
+      pipeline = crop || square
         ? pipeline.resize(WIDTH, WIDTH, { fit: "cover" }).composite([
             {
               input: Buffer.from(

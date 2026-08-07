@@ -52,30 +52,16 @@ const JOBS = [
   ["AboutUs_HomePage_StoreImage.png", `${PUBLIC}/store-home.webp`, { width: 1200 }],
   ["AboutUs_MainPage_StoreImage.png", `${PUBLIC}/store-about.webp`, { width: 1400 }],
 
-  // Square collection posters — card art for tiles and the hero fan.
-  ["Poster_Pokemon1.png", `${PUBLIC}/collections/pokemon.webp`, { width: 700 }],
-  ["Poster_OnePiece1.png", `${PUBLIC}/collections/one-piece.webp`, { width: 700 }],
-  ["Poster_Magic.png", `${PUBLIC}/collections/magic.webp`, { width: 700 }],
-  ["Poster_Sports.png", `${PUBLIC}/collections/sports-cards.webp`, { width: 700 }],
+  /*
+    Collection posters and banners are NOT built here.
 
-  // Wide collection banners — page headers and event cards.
-  ["Banner_Pokemon.png", `${PUBLIC}/banners/pokemon.webp`, { width: 1400 }],
-  ["Banner_OnePiece.png", `${PUBLIC}/banners/one-piece.webp`, { width: 1400 }],
-  ["Banner_Magic.png", `${PUBLIC}/banners/magic.webp`, { width: 1400 }],
-  ["Banner_Sports.png", `${PUBLIC}/banners/sports-cards.webp`, { width: 1400 }],
-
-  // Disney Lorcana has no artwork yet — it falls back to the gradient
-  // treatment everywhere until these two land.
-  [
-    "Poster_Lorcana.png",
-    `${PUBLIC}/collections/disney-lorcana.webp`,
-    { width: 700, optional: true },
-  ],
-  [
-    "Banner_Lorcana.png",
-    `${PUBLIC}/banners/disney-lorcana.webp`,
-    { width: 1400, optional: true },
-  ],
+    `build-collection-art.mjs` generates them from the public card APIs and
+    owns those outputs. They used to be cut from commissioned PNGs by this
+    script; those jobs were removed so a re-run can't silently restore the old
+    artwork over the generated set. To go back to commissioned art, add jobs
+    here again for `collections/<slug>.webp` and `banners/<slug>.webp` — this
+    script's output wins, because it runs against real source files.
+  */
 
   /*
     Favicon + touch icon (Next's file conventions pick these up by name).

@@ -130,9 +130,9 @@ export function CardFan({
       onPointerMove={lean}
       onPointerLeave={level}
       className={cn(
-        "relative mx-auto aspect-[4/3] w-full max-w-sm [--fan-spread:0.72] [perspective:1400px]",
-        "sm:max-w-md sm:[--fan-spread:0.85]",
-        "lg:max-w-lg lg:[--fan-spread:1]",
+        "relative mx-auto aspect-[4/3] w-full max-w-md [--fan-spread:0.72] [perspective:1400px]",
+        "sm:max-w-lg sm:[--fan-spread:0.85]",
+        "lg:max-w-xl lg:[--fan-spread:1]",
         swipeable && "cursor-grab touch-pan-y select-none active:cursor-grabbing",
         className,
       )}
@@ -185,11 +185,13 @@ export function CardFan({
                   }
                   gradient={card.collection.gradient}
                   image={card.collection.image}
-                  sizes="(min-width: 1024px) 160px, 30vw"
+                  sizes="(min-width: 1024px) 200px, 32vw"
                   priority
                   className="aspect-[3/4] w-full"
                   compact
                   align={slot.align}
+                  /* Nothing beside a fanned card names it. */
+                  labelled
                 />
               </div>
             </div>
