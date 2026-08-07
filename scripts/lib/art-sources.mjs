@@ -97,16 +97,6 @@ export async function lorcastCards(query, count = 1) {
 }
 
 /**
- * A file from Wikimedia Commons, by exact title, at a given render width.
- *
- * Used where Openverse's ranking can't find the subject — card supplies, in
- * practice. Titles are pinned rather than searched because these were picked
- * by hand: see `CREDITS.md` for what each one is and who took it.
- */
-export const commonsFile = (title, width = 1200) =>
-  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(title)}?width=${width}`;
-
-/**
  * A commercially-licensed photograph from Openverse.
  *
  * Openverse is an unvetted index — a "trading card album" search surfaces

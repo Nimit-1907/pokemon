@@ -23,10 +23,9 @@
  * Bandai, so the stamp is unavoidable. Those cards are art-cropped to the panel
  * *above* the band instead of used whole — see `ART_CROPS.onePiece`.
  *
- * Sports cards and accessories have no card API behind them: those come from
- * Openverse and from hand-picked Wikimedia Commons files respectively, and are
- * CC-licensed rather than publisher-owned. Attribution for them is required —
- * see `public/images/CREDITS.md`.
+ * Sports cards are the exception: there's no sports-card API, so those tiles
+ * are CC-licensed photographs from Openverse and attribution for them is
+ * required — see `public/images/CREDITS.md`.
  *
  * Usage: node scripts/fetch-product-art.mjs [productId ...]
  */
@@ -38,7 +37,6 @@ import {
   ART_CROPS,
   get,
   limitlessOnePieceUrl,
-  commonsFile,
   openversePhoto,
   pause,
   ptcgCardUrl,
@@ -108,7 +106,7 @@ const SOURCES = {
   */
   "sp-1": { via: "openverse", q: "basketball dunk", pick: 0 },
   "sp-2": { via: "openverse", q: "american football players tackle", pick: 2 },
-  "sp-3": { via: "openverse", q: "soccer player ball action", pick: 0 },
+  "sp-3": { via: "openverse", q: "football match players", pick: 0 },
   "sp-4": { via: "openverse", q: "basketball player shooting", pick: 1 },
   "sp-5": { via: "openverse", q: "american football quarterback", pick: 1 },
   "sp-6": { via: "openverse", q: "baseball batter", pick: 0 },
@@ -120,25 +118,21 @@ const SOURCES = {
   "sp-7": { via: "openverse", q: "ice hockey players puck", pick: 3 },
 
   /*
-    --- Accessories: hand-picked Wikimedia Commons files.
+    --- Accessories: card art, not photographs of the accessory.
 
-    Search ranking is useless for card supplies — "card sleeves" returns
-    passport holders and Victorian trade cards — so these are pinned by title.
-    All four are CC BY-SA 4.0 and credited in `public/images/CREDITS.md`;
-    keep that file in step with this block.
+    Free photography of card supplies is uniformly poor — the best Commons has
+    is a playing card in a sleeve on someone's desk, and a dim snapshot of a
+    binder on a trade table. Next to the card art on every other tile they
+    looked like mistakes, so these show art from their own game instead. The
+    tile is decorative; the product name carries the meaning.
 
-    Shots of identifiable people were rejected on likeness grounds, which are
-    separate from the copyright licence. The binder photo is cropped to the
-    pages for that reason: the full frame has bystanders in it.
+    This also keeps every image on the site publisher card art, with no
+    CC attribution obligation riding on four accessory photos.
   */
-  "pk-10": { via: "commons", file: "Sleeved playing card.jpg" },
-  "op-7": { via: "commons", file: "Netrunner - Gateway starter decks.jpg" },
-  "mg-7": { via: "commons", file: "Magic the Gathering - Commander.jpg" },
-  "dl-7": {
-    via: "commons",
-    file: "Magic the Gathering - Trade.jpg",
-    crop: { left: 0, top: 0.52, width: 1, height: 0.44 },
-  },
+  "pk-10": { via: "ptcgCard", set: "sv4pt5", number: "232" },
+  "op-7": { via: "optcgSet", set: "OP-04", cardId: "OP04-112" },
+  "mg-7": { via: "scryfallNamed", name: "Sheoldred, the Apocalypse" },
+  "dl-7": { via: "lorcast", q: "set:4 rarity:legendary" },
 };
 
 const RESOLVERS = {
@@ -174,11 +168,6 @@ const RESOLVERS = {
     return url && { url, square: true };
   },
 
-  commons: async (s) => ({
-    url: commonsFile(s.file),
-    square: true,
-    crop: s.crop,
-  }),
 
   lorcast: async (s) => {
     const res = await get(
