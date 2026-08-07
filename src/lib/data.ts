@@ -1,4 +1,15 @@
+import { productsPerCollection } from "@/lib/flags";
 import type { Collection, Product, StoreEvent } from "@/types";
+
+/**
+ * The catch-all category filter.
+ *
+ * Lives here, not in `CollectionProducts`, because that module is
+ * `"use client"` — a server component importing a plain constant from a client
+ * module gets a client *reference* rather than the value, so this arrived as
+ * `undefined` and silently filtered "All Products" out of the sidebar.
+ */
+export const ALL_PRODUCTS = "All Products";
 
 /**
  * Central mock data. Everything the site renders is driven from here so pages
@@ -101,11 +112,19 @@ export function getCollection(slug: string): Collection | undefined {
   return collections.find((c) => c.slug === slug);
 }
 
+/*
+  PLACEHOLDER SCHEDULE — replace with the shop's real calendar.
+
+  These dates are the one part of this file that expires. Anything already in
+  the past is filtered out of the listings at runtime, so a stale calendar
+  doesn't show finished events — but it does leave the site looking like
+  nothing is on. Keep dates ahead of today.
+*/
 export const events: StoreEvent[] = [
   {
     slug: "pokemon-league-challenge",
     title: "Pokémon League Challenge",
-    date: "2026-05-25",
+    date: "2026-08-15",
     time: "12:00 PM",
     entry: "$10 Entry",
     collection: "pokemon",
@@ -117,7 +136,7 @@ export const events: StoreEvent[] = [
   {
     slug: "one-piece-store-tournament",
     title: "One Piece Store Tournament",
-    date: "2026-05-31",
+    date: "2026-08-22",
     time: "1:00 PM",
     entry: "$10 Entry",
     collection: "one-piece",
@@ -129,7 +148,7 @@ export const events: StoreEvent[] = [
   {
     slug: "friday-night-magic",
     title: "Friday Night Magic",
-    date: "2026-06-07",
+    date: "2026-08-14",
     time: "6:00 PM",
     entry: "$5 Entry",
     collection: "magic",
@@ -141,7 +160,7 @@ export const events: StoreEvent[] = [
   {
     slug: "lorcana-league",
     title: "Lorcana League",
-    date: "2026-06-14",
+    date: "2026-08-29",
     time: "12:00 PM",
     entry: "$10 Entry",
     collection: "disney-lorcana",
@@ -153,7 +172,7 @@ export const events: StoreEvent[] = [
   {
     slug: "sports-card-break-night",
     title: "Sports Card Break Night",
-    date: "2026-05-18",
+    date: "2026-09-04",
     time: "7:00 PM",
     entry: "Buy-in varies",
     collection: "sports-cards",
@@ -165,7 +184,7 @@ export const events: StoreEvent[] = [
   {
     slug: "commander-night",
     title: "Commander Night",
-    date: "2026-06-20",
+    date: "2026-09-12",
     time: "6:30 PM",
     entry: "Free",
     collection: "magic",
@@ -177,7 +196,7 @@ export const events: StoreEvent[] = [
   {
     slug: "pokemon-prerelease",
     title: "Pokémon Set Prerelease",
-    date: "2026-06-28",
+    date: "2026-09-19",
     time: "11:00 AM",
     entry: "$30 Entry",
     collection: "pokemon",
@@ -199,42 +218,42 @@ export const sortedEvents: StoreEvent[] = [...events].sort((a, b) =>
 
 export const products: Product[] = [
   // Pokémon
-  { id: "pk-1", name: "Scarlet & Violet", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 149.99, gradient: { from: "#f5b342", to: "#b8341e" } },
-  { id: "pk-2", name: "Crown Zenith", collection: "pokemon", category: "Elite Trainer Boxes", type: "Elite Trainer Box", price: 69.99, gradient: { from: "#4aa3df", to: "#153a5b" } },
-  { id: "pk-3", name: "Paldea Evolved", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 139.99, gradient: { from: "#e0679b", to: "#5b1f3a" } },
-  { id: "pk-4", name: "151", collection: "pokemon", category: "Booster Packs", type: "Booster Bundle", price: 26.99, gradient: { from: "#e23b3b", to: "#7a1414" } },
-  { id: "pk-5", name: "Paldean Fates", collection: "pokemon", category: "Elite Trainer Boxes", type: "Elite Trainer Box", price: 59.99, gradient: { from: "#c9a227", to: "#4a3708" } },
-  { id: "pk-6", name: "Obsidian Flames", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 129.99, gradient: { from: "#3a3a3a", to: "#0a0a0a" } },
-  { id: "pk-7", name: "Temporal Forces", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 129.99, gradient: { from: "#7c4dbd", to: "#2a1a4a" } },
-  { id: "pk-8", name: "Fusion Strike", collection: "pokemon", category: "Booster Packs", type: "Booster Pack", price: 4.99, gradient: { from: "#e0679b", to: "#3a1428" } },
-  { id: "pk-9", name: "Charizard ex", collection: "pokemon", category: "Singles", type: "Single Card", price: 89.99, gradient: { from: "#ff7a1a", to: "#7a1414" } },
+  { id: "pk-1", name: "Scarlet & Violet", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 149.99, gradient: { from: "#f5b342", to: "#b8341e" }, image: "/images/products/pk-1.webp" },
+  { id: "pk-2", name: "Crown Zenith", collection: "pokemon", category: "Elite Trainer Boxes", type: "Elite Trainer Box", price: 69.99, gradient: { from: "#4aa3df", to: "#153a5b" }, image: "/images/products/pk-2.webp" },
+  { id: "pk-3", name: "Paldea Evolved", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 139.99, gradient: { from: "#e0679b", to: "#5b1f3a" }, image: "/images/products/pk-3.webp" },
+  { id: "pk-4", name: "151", collection: "pokemon", category: "Booster Packs", type: "Booster Bundle", price: 26.99, gradient: { from: "#e23b3b", to: "#7a1414" }, image: "/images/products/pk-4.webp" },
+  { id: "pk-5", name: "Paldean Fates", collection: "pokemon", category: "Elite Trainer Boxes", type: "Elite Trainer Box", price: 59.99, gradient: { from: "#c9a227", to: "#4a3708" }, image: "/images/products/pk-5.webp" },
+  { id: "pk-6", name: "Obsidian Flames", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 129.99, gradient: { from: "#3a3a3a", to: "#0a0a0a" }, image: "/images/products/pk-6.webp" },
+  { id: "pk-7", name: "Temporal Forces", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 129.99, gradient: { from: "#7c4dbd", to: "#2a1a4a" }, image: "/images/products/pk-7.webp" },
+  { id: "pk-8", name: "Fusion Strike", collection: "pokemon", category: "Booster Packs", type: "Booster Pack", price: 4.99, gradient: { from: "#e0679b", to: "#3a1428" }, image: "/images/products/pk-8.webp" },
+  { id: "pk-9", name: "Charizard ex", collection: "pokemon", category: "Singles", type: "Single Card", price: 89.99, gradient: { from: "#ff7a1a", to: "#7a1414" }, image: "/images/products/pk-9.webp" },
   { id: "pk-10", name: "Premium Card Sleeves", collection: "pokemon", category: "Accessories", type: "Accessory", price: 12.99, gradient: { from: "#3fae14", to: "#123a08" } },
 
   // One Piece
-  { id: "op-1", name: "Romance Dawn", collection: "one-piece", category: "Booster Boxes", type: "Booster Box", price: 119.99, gradient: { from: "#e23b3b", to: "#7a1414" } },
-  { id: "op-2", name: "Paramount War", collection: "one-piece", category: "Booster Boxes", type: "Booster Box", price: 124.99, gradient: { from: "#c9302c", to: "#4a0f0f" } },
-  { id: "op-3", name: "Straw Hat Crew", collection: "one-piece", category: "Starter Decks", type: "Starter Deck", price: 14.99, gradient: { from: "#e07b1a", to: "#5b2e08" } },
-  { id: "op-4", name: "Worst Generation", collection: "one-piece", category: "Starter Decks", type: "Starter Deck", price: 14.99, gradient: { from: "#8b2fd1", to: "#2a1a4a" } },
-  { id: "op-5", name: "Wings of Captain", collection: "one-piece", category: "Booster Packs", type: "Booster Pack", price: 5.49, gradient: { from: "#2f7fd1", to: "#123a63" } },
-  { id: "op-6", name: "Monkey D. Luffy", collection: "one-piece", category: "Singles", type: "Leader Card", price: 34.99, gradient: { from: "#e23b3b", to: "#3a1010" } },
+  { id: "op-1", name: "Romance Dawn", collection: "one-piece", category: "Booster Boxes", type: "Booster Box", price: 119.99, gradient: { from: "#e23b3b", to: "#7a1414" }, image: "/images/products/op-1.webp" },
+  { id: "op-2", name: "Paramount War", collection: "one-piece", category: "Booster Boxes", type: "Booster Box", price: 124.99, gradient: { from: "#c9302c", to: "#4a0f0f" }, image: "/images/products/op-2.webp" },
+  { id: "op-3", name: "Straw Hat Crew", collection: "one-piece", category: "Starter Decks", type: "Starter Deck", price: 14.99, gradient: { from: "#e07b1a", to: "#5b2e08" }, image: "/images/products/op-3.webp" },
+  { id: "op-4", name: "Worst Generation", collection: "one-piece", category: "Starter Decks", type: "Starter Deck", price: 14.99, gradient: { from: "#8b2fd1", to: "#2a1a4a" }, image: "/images/products/op-4.webp" },
+  { id: "op-5", name: "Wings of Captain", collection: "one-piece", category: "Booster Packs", type: "Booster Pack", price: 5.49, gradient: { from: "#2f7fd1", to: "#123a63" }, image: "/images/products/op-5.webp" },
+  { id: "op-6", name: "Monkey D. Luffy", collection: "one-piece", category: "Singles", type: "Leader Card", price: 34.99, gradient: { from: "#e23b3b", to: "#3a1010" }, image: "/images/products/op-6.webp" },
   { id: "op-7", name: "Playmat — Grand Line", collection: "one-piece", category: "Accessories", type: "Accessory", price: 24.99, gradient: { from: "#3fae14", to: "#123a08" } },
 
   // Magic: The Gathering
-  { id: "mg-1", name: "Murders at Karlov Manor", collection: "magic", category: "Booster Boxes", type: "Play Booster Box", price: 129.99, gradient: { from: "#6b5b95", to: "#241b30" } },
-  { id: "mg-2", name: "The Lost Caverns", collection: "magic", category: "Booster Boxes", type: "Set Booster Box", price: 134.99, gradient: { from: "#4a7c59", to: "#16281c" } },
-  { id: "mg-3", name: "Deep Gnome Commander", collection: "magic", category: "Commander Decks", type: "Commander Deck", price: 44.99, gradient: { from: "#8a6d3b", to: "#2e2410" } },
-  { id: "mg-4", name: "Ravnica Remastered Bundle", collection: "magic", category: "Bundles", type: "Bundle", price: 49.99, gradient: { from: "#b5452f", to: "#3a1610" } },
-  { id: "mg-5", name: "Sol Ring — Foil", collection: "magic", category: "Singles", type: "Single Card", price: 19.99, gradient: { from: "#c9a227", to: "#3a2c08" } },
-  { id: "mg-6", name: "Ragavan, Nimble Pilferer", collection: "magic", category: "Singles", type: "Single Card", price: 59.99, gradient: { from: "#c0392b", to: "#3a100c" } },
+  { id: "mg-1", name: "Murders at Karlov Manor", collection: "magic", category: "Booster Boxes", type: "Play Booster Box", price: 129.99, gradient: { from: "#6b5b95", to: "#241b30" }, image: "/images/products/mg-1.webp" },
+  { id: "mg-2", name: "The Lost Caverns", collection: "magic", category: "Booster Boxes", type: "Set Booster Box", price: 134.99, gradient: { from: "#4a7c59", to: "#16281c" }, image: "/images/products/mg-2.webp" },
+  { id: "mg-3", name: "Deep Gnome Commander", collection: "magic", category: "Commander Decks", type: "Commander Deck", price: 44.99, gradient: { from: "#8a6d3b", to: "#2e2410" }, image: "/images/products/mg-3.webp" },
+  { id: "mg-4", name: "Ravnica Remastered Bundle", collection: "magic", category: "Bundles", type: "Bundle", price: 49.99, gradient: { from: "#b5452f", to: "#3a1610" }, image: "/images/products/mg-4.webp" },
+  { id: "mg-5", name: "Sol Ring — Foil", collection: "magic", category: "Singles", type: "Single Card", price: 19.99, gradient: { from: "#c9a227", to: "#3a2c08" }, image: "/images/products/mg-5.webp" },
+  { id: "mg-6", name: "Ragavan, Nimble Pilferer", collection: "magic", category: "Singles", type: "Single Card", price: 59.99, gradient: { from: "#c0392b", to: "#3a100c" }, image: "/images/products/mg-6.webp" },
   { id: "mg-7", name: "Dragon Shield Sleeves", collection: "magic", category: "Accessories", type: "Accessory", price: 11.99, gradient: { from: "#3fae14", to: "#123a08" } },
 
   // Disney Lorcana
-  { id: "dl-1", name: "Into the Inklands", collection: "disney-lorcana", category: "Booster Boxes", type: "Booster Box", price: 144.99, gradient: { from: "#7c4dbd", to: "#2a1a4a" } },
-  { id: "dl-2", name: "Rise of the Floodborn", collection: "disney-lorcana", category: "Booster Boxes", type: "Booster Box", price: 149.99, gradient: { from: "#4a6ebd", to: "#1a2a4a" } },
-  { id: "dl-3", name: "Amber & Amethyst Deck", collection: "disney-lorcana", category: "Starter Decks", type: "Starter Deck", price: 16.99, gradient: { from: "#b57ddb", to: "#3a2050" } },
-  { id: "dl-4", name: "Illumineer's Trove", collection: "disney-lorcana", category: "Illumineer's Trove", type: "Trove", price: 49.99, gradient: { from: "#5b3d8f", to: "#1f1436" } },
-  { id: "dl-5", name: "Elsa — Snow Queen", collection: "disney-lorcana", category: "Singles", type: "Single Card", price: 27.99, gradient: { from: "#4aa3df", to: "#153a5b" } },
-  { id: "dl-6", name: "Mickey — Brave Little Tailor", collection: "disney-lorcana", category: "Singles", type: "Single Card", price: 39.99, gradient: { from: "#c0392b", to: "#3a100c" } },
+  { id: "dl-1", name: "Into the Inklands", collection: "disney-lorcana", category: "Booster Boxes", type: "Booster Box", price: 144.99, gradient: { from: "#7c4dbd", to: "#2a1a4a" }, image: "/images/products/dl-1.webp" },
+  { id: "dl-2", name: "Rise of the Floodborn", collection: "disney-lorcana", category: "Booster Boxes", type: "Booster Box", price: 149.99, gradient: { from: "#4a6ebd", to: "#1a2a4a" }, image: "/images/products/dl-2.webp" },
+  { id: "dl-3", name: "Amber & Amethyst Deck", collection: "disney-lorcana", category: "Starter Decks", type: "Starter Deck", price: 16.99, gradient: { from: "#b57ddb", to: "#3a2050" }, image: "/images/products/dl-3.webp" },
+  { id: "dl-4", name: "Illumineer's Trove", collection: "disney-lorcana", category: "Illumineer's Trove", type: "Trove", price: 49.99, gradient: { from: "#5b3d8f", to: "#1f1436" }, image: "/images/products/dl-4.webp" },
+  { id: "dl-5", name: "Elsa — Snow Queen", collection: "disney-lorcana", category: "Singles", type: "Single Card", price: 27.99, gradient: { from: "#4aa3df", to: "#153a5b" }, image: "/images/products/dl-5.webp" },
+  { id: "dl-6", name: "Mickey — Brave Little Tailor", collection: "disney-lorcana", category: "Singles", type: "Single Card", price: 39.99, gradient: { from: "#c0392b", to: "#3a100c" }, image: "/images/products/dl-6.webp" },
   { id: "dl-7", name: "Card Portfolio Binder", collection: "disney-lorcana", category: "Accessories", type: "Accessory", price: 18.99, gradient: { from: "#3fae14", to: "#123a08" } },
 
   // Sports Cards
@@ -249,4 +268,17 @@ export const products: Product[] = [
 
 export function getProductsByCollection(slug: string): Product[] {
   return products.filter((p) => p.collection === slug);
+}
+
+/**
+ * The products a collection actually lists, honouring the demo sample cap in
+ * `lib/flags.ts`.
+ *
+ * Everything that shows a count uses this, so a tile can't advertise "10 items"
+ * and then open a page showing three. Use `getProductsByCollection` only when
+ * you genuinely want the full range regardless of what's on display.
+ */
+export function getListedProducts(slug: string): Product[] {
+  const all = getProductsByCollection(slug);
+  return productsPerCollection ? all.slice(0, productsPerCollection) : all;
 }

@@ -3,51 +3,81 @@
 
 /*
   Emerald Cards & Games — design system
-  Near-black background, emerald-green accent, dark glowing cards.
-  Single dark theme (the brand is dark by design).
+
+  Palette: "emerald & brass". The base is a green-tinted ink rather than a
+  neutral black, so the whole page reads as one material instead of as content
+  floating on #000. Two accents, each with a job:
+
+    emerald — live and interactive. Open-now, CTAs, the active nav item,
+              anything the visitor can act on. Used sparingly so it still
+              registers as a signal.
+    brass   — value and precision. Prices, dates, entry fees, counts. Anything
+              numeric or catalogue-like.
+
+  Keeping those roles separate is what gives the page hierarchy. The previous
+  system put the same emerald glow on every surface, which flattened it: a
+  product tile and a phone-number box shouted equally loudly.
 */
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.625rem;
 
-  /* Core surfaces */
-  --background: #050505;
-  --foreground: #f4f5f2;
+  /* Core surfaces — a four-step ladder, darkest to lightest */
+  --base: #06100b;
+  --surface-1: #0b1710;
+  --surface-2: #112019;
+  --surface-3: #17291f;
 
-  --card: #111111;
-  --card-foreground: #f4f5f2;
+  --background: var(--base);
+  --foreground: #f2efe6;
 
-  --popover: #0d0d0d;
-  --popover-foreground: #f4f5f2;
+  --card: var(--surface-1);
+  --card-foreground: var(--foreground);
 
-  /* Emerald accent (brand) */
-  --brand: #55e71b;
-  --brand-foreground: #04120a;
-  --brand-dim: #3fae14;
+  --popover: var(--surface-2);
+  --popover-foreground: var(--foreground);
 
-  --primary: #55e71b;
-  --primary-foreground: #04120a;
+  /* Emerald — live / interactive */
+  --brand: #3edd6b;
+  --brand-foreground: #041209;
+  --brand-dim: #1b9e4b;
 
-  --secondary: #1a1a1a;
-  --secondary-foreground: #f4f5f2;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
 
-  --muted: #161616;
-  --muted-foreground: #9aa097;
+  /* Brass — value / numerals */
+  --brass: #d9a857;
+  --brass-dim: #a87b33;
+  --brass-foreground: #170f02;
 
-  --accent: #1c2a15;
-  --accent-foreground: #b6f59a;
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--foreground);
 
-  --destructive: #ef4444;
+  --muted: var(--surface-2);
+  /* Green-tinted grey: a neutral grey reads cold against the ink base. */
+  --muted-foreground: #a9b3a6;
 
-  --border: #1e1e1e;
-  --input: #242424;
-  --ring: #55e71b;
+  --accent: var(--surface-3);
+  --accent-foreground: #cdf0d4;
 
-  /* Glow used by the signature card treatment */
-  --glow: 0 0 0 1px color-mix(in srgb, var(--brand) 22%, transparent),
-    0 0 22px -6px color-mix(in srgb, var(--brand) 45%, transparent);
-  --glow-strong: 0 0 0 1px color-mix(in srgb, var(--brand) 55%, transparent),
-    0 0 34px -4px color-mix(in srgb, var(--brand) 65%, transparent);
+  --destructive: #e5484d;
+
+  --border: #1c2e23;
+  --border-strong: #2a4335;
+  --input: #23392c;
+  --ring: var(--brand);
+
+  /*
+    Reserved for the few elements that are genuinely "live" — the open-now dot
+    and the primary CTA. Everything else uses a hairline.
+  */
+  --glow: 0 0 20px -6px color-mix(in srgb, var(--brand) 55%, transparent);
+
+  /*
+    Page gutter. Declared here as well as in the theme because `Container`
+    needs it inside a `max()` alongside the safe-area inset.
+  */
+  --gutter: clamp(1rem, 0.609rem + 1.739vw, 2rem);
 }
 
 @theme inline {
@@ -75,13 +105,63 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  --color-base: var(--base);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border-strong: var(--border-strong);
+
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-dim: var(--brand-dim);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-display);
+  --color-brass: var(--brass);
+  --color-brass-dim: var(--brass-dim);
+  --color-brass-foreground: var(--brass-foreground);
+
+  /*
+    Type roles:
+      display — Archivo at a widened `wdth` axis. Headlines only.
+      sans    — Instrument Sans. All running copy and UI.
+      mono    — IBM Plex Mono. Prices, times, dates, counts — anything the
+                reader scans as data. Tabular figures keep columns aligned.
+  */
+  --font-display: var(--font-archivo);
+  --font-sans: var(--font-instrument-sans);
+  --font-mono: var(--font-plex-mono);
+
+  /*
+    Fluid spacing scale.
+
+    Same 360px → 1280px interpolation as the type scale below, for the same
+    reason: spacing should track the viewport instead of stepping at one
+    breakpoint and then never moving again.
+
+    It replaced a `py-12 sm:py-16` pattern whose scaling stopped dead at 640px,
+    so a tablet and a 27" monitor got identical 64px section padding — and four
+    competing rhythms across the app (`py-12 sm:py-16`, `py-14 sm:py-20`,
+    `py-10 sm:py-14`, and a couple of flat `py-12`s that never scaled at all).
+
+      section       48 → 112px  the gap between page bands. The big one.
+      section-tight 40 →  72px  page-header bands and the footer, which sit
+                                against a border and need less air.
+      stack         24 →  40px  a section heading to its content.
+      tile          12 →  20px  between cards in a grid.
+      gutter        16 →  32px  page side margin (also `--gutter` above).
+
+    NAMING: never give a spacing step the name of a display utility — `block`,
+    `grid`, `flex`, `table`, `inline`. Tailwind generates an `inline-<step>`
+    utility for the `inline-size` property from this namespace, so
+    `--spacing-block` emitted a second `.inline-block` rule setting a width.
+    It won the cascade and collapsed every `inline-block` element on the site
+    to 24px — footer links wrapped one syllable per line. Hence `stack` and
+    `tile` rather than the obvious names.
+  */
+  --spacing-gutter: var(--gutter);
+  --spacing-section: clamp(3rem, 1.435rem + 6.957vw, 7rem);
+  --spacing-section-tight: clamp(2.5rem, 1.717rem + 3.478vw, 4.5rem);
+  --spacing-stack: clamp(1.5rem, 1.109rem + 1.739vw, 2.5rem);
+  --spacing-tile: clamp(0.75rem, 0.554rem + 0.87vw, 1.25rem);
 
   /*
     Fluid type scale.
@@ -104,25 +184,25 @@
     `textarea.tsx`, which run `text-base md:text-sm`).
   */
 
-  /* Hero headline — the one piece of type allowed to get big. 32 → 64px */
-  --text-display: clamp(2rem, 1.217rem + 3.478vw, 4rem);
-  --text-display--line-height: 1.02;
-  --text-display--letter-spacing: -0.02em;
+  /* Hero headline — the one piece of type allowed to get big. 34 → 76px */
+  --text-display: clamp(2.125rem, 0.995rem + 5.022vw, 4.75rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.035em;
 
-  /* Page titles. 28 → 48px */
-  --text-h1: clamp(1.75rem, 1.261rem + 2.174vw, 3rem);
-  --text-h1--line-height: 1.08;
-  --text-h1--letter-spacing: -0.02em;
+  /* Page titles. 28 → 52px */
+  --text-h1: clamp(1.75rem, 1.098rem + 2.899vw, 3.25rem);
+  --text-h1--line-height: 1.02;
+  --text-h1--letter-spacing: -0.03em;
 
-  /* Section headings. 20 → 30px */
-  --text-h2: clamp(1.25rem, 1.005rem + 1.087vw, 1.875rem);
-  --text-h2--line-height: 1.15;
-  --text-h2--letter-spacing: -0.02em;
+  /* Section headings. 20 → 32px */
+  --text-h2: clamp(1.25rem, 0.973rem + 1.232vw, 2rem);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.025em;
 
   /* Sub-section and panel headings. 17 → 20px */
   --text-h3: clamp(1.0625rem, 0.989rem + 0.326vw, 1.25rem);
   --text-h3--line-height: 1.25;
-  --text-h3--letter-spacing: -0.01em;
+  --text-h3--letter-spacing: -0.015em;
 
   /* Intro paragraph under a title. 16 → 20px */
   --text-lead: clamp(1rem, 0.902rem + 0.435vw, 1.25rem);
@@ -143,7 +223,12 @@
   /* Uppercase tracked labels above a heading or beside an icon. 12 → 13px */
   --text-eyebrow: clamp(0.75rem, 0.726rem + 0.109vw, 0.8125rem);
   --text-eyebrow--line-height: 1.4;
-  --text-eyebrow--letter-spacing: 0.1em;
+  --text-eyebrow--letter-spacing: 0.14em;
+
+  /* Prices on a tile. 15 → 17px */
+  --text-price: clamp(0.9375rem, 0.864rem + 0.326vw, 1.0625rem);
+  --text-price--line-height: 1.2;
+  --text-price--letter-spacing: -0.02em;
 
   /* Prominent CTAs — the `lg` button size. 15 → 16px */
   --text-control-lg: clamp(0.9375rem, 0.913rem + 0.109vw, 1rem);
@@ -204,45 +289,375 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--brand) 30%, transparent);
+    background: color-mix(in srgb, var(--brass) 35%, transparent);
     color: var(--foreground);
   }
 }
 
 @layer components {
   /*
-    Signature element: the glowing emerald border.
-    `.glow-card` gives every card/event/product tile one shared identity —
-    a hairline emerald ring that blooms on hover.
+    Widen Archivo's `wdth` axis for headlines. The utility generated from
+    `--font-display` only sets the family, so setting the axis here composes
+    rather than conflicts — and `font-stretch` (not `font-variation-settings`)
+    is used so `font-weight` keeps working alongside it.
   */
-  .glow-card {
+  .font-display {
+    font-stretch: 112%;
+  }
+
+  /*
+    Data type: prices, times, dates, counts. `tabular-nums` is the point —
+    a column of prices should line up on the decimal.
+  */
+  .font-data {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+    Quiet surface. The default for anything that holds information but isn't
+    itself clickable — contact details, store hours, detail sidebars. A
+    hairline and a hint of lift, nothing more.
+  */
+  .panel {
     position: relative;
     border: 1px solid var(--border);
-    background: var(--card);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease,
-      transform 0.3s ease;
+    background: var(--surface-1);
+    border-radius: var(--radius-lg);
   }
 
-  .glow-card:hover {
-    border-color: color-mix(in srgb, var(--brand) 60%, transparent);
-    box-shadow: var(--glow-strong);
-    transform: translateY(-3px);
+  /*
+    Signature: the slab.
+
+    A card in a top-loader catches light along its top edge. `.slab` is that —
+    a brass hairline across the top of every clickable tile, plus a foil sweep
+    that crosses the card on hover, the way a holo does when you tilt it.
+
+    This is the one flourish on the page. Everything else is hairlines and
+    spacing, which is what lets this read as deliberate rather than as another
+    glowing box.
+  */
+  .slab {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid var(--border);
+    background: var(--surface-1);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.25s ease, transform 0.25s ease,
+      background-color 0.25s ease;
   }
 
-  .glow-ring {
-    box-shadow: var(--glow);
-    border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+  .slab::before {
+    /* The brass top edge. Brightens as the tile lifts. */
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    z-index: 2;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--brass) 65%, transparent) 20%,
+      color-mix(in srgb, var(--brass) 85%, transparent) 50%,
+      color-mix(in srgb, var(--brass) 65%, transparent) 80%,
+      transparent
+    );
+    opacity: 0.5;
+    transition: opacity 0.25s ease;
   }
 
-  /* Hero fan cards glide to their new slot when the deck is rotated. */
+  .slab::after {
+    /* The foil sweep. Parked off the left edge until hover. */
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    /*
+      Literal rgba, same reason as `.ambient-wash`: Lightning CSS can't resolve
+      a `color-mix` built on a custom property, so it emits bare `var(--brass)`
+      as the pre-`@supports` fallback. That turns a 12% sweep into a saturated
+      brass-and-emerald band on any browser without `color-mix` — the exact
+      rainbow this treatment is meant not to be.
+    */
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgba(217, 168, 87, 0.12) 45%,
+      rgba(255, 255, 255, 0.14) 50%,
+      rgba(62, 221, 107, 0.12) 55%,
+      transparent 65%
+    );
+    opacity: 0;
+    transform: translateX(-60%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.3s ease;
+  }
+
+  .slab:hover,
+  .slab:focus-within {
+    border-color: var(--border-strong);
+    background: var(--surface-2);
+    transform: translateY(-2px);
+  }
+
+  .slab:hover::before,
+  .slab:focus-within::before {
+    opacity: 1;
+  }
+
+  .slab:hover::after,
+  .slab:focus-within::after {
+    opacity: 1;
+    transform: translateX(60%);
+  }
+
+  /*
+    The card back.
+
+    The reverse of a trading card is a lattice of fine guilloché lines —
+    security print, not photography. This replaced a blurred photo of the shop
+    behind the hero, which at 14% opacity read as a placeholder that hadn't
+    loaded rather than as a deliberate ground.
+
+    Masked away toward the bottom so the lattice never competes with the
+    headline sitting on top of it.
+  */
+  .card-back {
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        color-mix(in srgb, var(--brass) 13%, transparent) 0 1px,
+        transparent 1px 17px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        color-mix(in srgb, var(--brand) 11%, transparent) 0 1px,
+        transparent 1px 17px
+      );
+    mask-image: radial-gradient(
+      110% 85% at 50% 0%,
+      #000 20%,
+      transparent 78%
+    );
+  }
+
+  /*
+    The ambient ground — see `layout/Ambient.tsx`.
+
+    One fixed layer behind the whole site. Before it, the hero was the only
+    band with anything under it: below the fold the page dropped to flat
+    `--base` and stayed there for the rest of the scroll, and every inner route
+    (`/contact`, the coming-soon pages) was flat top to bottom.
+
+    Fixed rather than per-section on purpose. It reads as the light in the room
+    the page is sitting in, so scrolling moves the content across it instead of
+    dragging a decoration along. Three parts, all of them nearly invisible on
+    their own — the effect is cumulative.
+  */
+  .ambient-wash {
+    position: absolute;
+    /*
+      Oversized so the slow drift below never pulls an edge into view. The
+      parent clips it, so this costs no scroll width.
+    */
+    inset: -12%;
+    /*
+      Literal rgba, not `color-mix(… var(--brand) 9% …)`, and the same reason
+      applies to `.band::after` below.
+
+      Lightning CSS can't resolve a `color-mix` whose colour is a custom
+      property at build time, so it emits the bare `var(--brand)` as the
+      pre-`@supports` fallback. On a 1px hairline like `.slab::before` that
+      degrades to a slightly brighter line and nobody notices. Here it would
+      paint a full-strength emerald wash across the entire viewport.
+
+      Hero and ComingSoon already write their washes this way.
+    */
+    background:
+      radial-gradient(45% 40% at 78% 6%, rgba(62, 221, 107, 0.09), transparent 70%),
+      radial-gradient(42% 44% at 8% 58%, rgba(217, 168, 87, 0.07), transparent 70%),
+      radial-gradient(50% 35% at 60% 104%, rgba(62, 221, 107, 0.06), transparent 70%);
+    animation: ambient-drift 36s ease-in-out infinite alternate;
+  }
+
+  /*
+    34 seconds one way. Long enough that nobody catches it moving — it only
+    registers as the page not being quite static. A shorter cycle turns into a
+    breathing background, which is a different and much louder effect.
+  */
+  @keyframes ambient-drift {
+    from {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(-1.5%, 1.5%, 0) scale(1.06);
+    }
+  }
+
+  /*
+    Print grain. Cards are printed on stock, and stock has tooth — this is the
+    one texture on the page that comes from the subject rather than from the
+    interface. It also does a practical job: a flat #06100b area this large
+    bands visibly on 8-bit panels, and noise is the standard fix for that.
+
+    Generated rather than fetched, so it costs no request.
+  */
+  .ambient-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+
+  /* Corners fall away, so the column of content sits in the lit part. */
+  .ambient-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      115% 78% at 50% 32%,
+      transparent 48%,
+      color-mix(in srgb, #000 42%, transparent)
+    );
+  }
+
+  /*
+    Band seam.
+
+    Sections are separated by up to 112px of space and nothing else, and at
+    that distance the eye stops reading them as separate bands. This marks the
+    join with a brass hairline that fades out at both ends, plus a faint
+    emerald spill running down from it — light coming through the seam rather
+    than a rule drawn under a box.
+
+    `isolation` is what makes the spill safe: it keeps the `z-index: -1` layer
+    inside this section, above the page ground but under the content, instead
+    of dropping behind everything.
+  */
+  .band {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .band::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--brass) 26%, transparent) 22%,
+      color-mix(in srgb, var(--brass) 42%, transparent) 50%,
+      color-mix(in srgb, var(--brass) 26%, transparent) 78%,
+      transparent
+    );
+  }
+
+  .band::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    /* Literal rgba for the reason given on `.ambient-wash` — this one covers
+       a whole section, so a full-strength fallback would be very loud. */
+    background: radial-gradient(
+      60% 45% at 50% 0%,
+      rgba(62, 221, 107, 0.06),
+      transparent 72%
+    );
+  }
+
+  /*
+    Emerald hairline, for the rare element that is genuinely live — the
+    store-status band and the featured event. Not a general card treatment.
+  */
+  .live-ring {
+    border-color: color-mix(in srgb, var(--brand) 35%, transparent);
+    box-shadow: inset 0 0 0 1px
+      color-mix(in srgb, var(--brand) 10%, transparent);
+  }
+
+  /*
+    Hero fan cards glide to their new slot when the deck is rotated, and deal
+    themselves out of a stack on first paint.
+
+    The deal is CSS rather than JS on purpose. `backwards` fill holds each card
+    squared up in the stack (`--stack`, set per card in `CardFan`) through its
+    own delay, then releases it into the slot the inline transform already
+    describes — so the fanned arrangement is what's in the HTML, and a visitor
+    whose JS never runs sees the finished hand instead of a pile. `backwards`
+    and not `both`: a forwards fill would keep overriding the inline transform
+    afterwards, and the deck could never be rotated again.
+  */
   .fan-card {
     transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: deal-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: var(--deal-delay, 0ms);
   }
 
-  /* Text with a soft emerald glow — used for the accent keyword in headings */
-  .text-glow {
-    color: var(--brand);
-    text-shadow: 0 0 24px color-mix(in srgb, var(--brand) 45%, transparent);
+  @keyframes deal-in {
+    from {
+      transform: var(--stack);
+    }
+  }
+
+  /*
+    The lean. `.slab` gives a tile the top edge and foil sweep of a card in a
+    top-loader; this adds the 3D lean toward the pointer (see
+    `motion/TiltCard.tsx`), so the sweep crosses a surface that's actually
+    tilting.
+
+    There used to be a `.holo` layer here too — a cursor-tracked highlight that
+    screen-blended emerald, white and brass across the whole tile. Three
+    colours at that size read as a rainbow wash rather than as foil, and it
+    buried the artwork it was sitting on. `.slab`'s sweep is the same idea at
+    the right dose: one narrow diagonal, low opacity, gone in half a second.
+    Don't reintroduce a second light source on these tiles — one foil per card.
+  */
+  .tilt-card {
+    perspective: 800px;
+  }
+
+  /*
+    NOTE: the accent keyword in a headline uses the `text-brass` utility
+    directly. A `.text-accent` component class was tried here and silently lost
+    to Tailwind's generated `text-accent` utility (from `--color-accent`, a dark
+    surface green), which rendered the hero's accent word nearly invisible
+    against the background. Don't reintroduce a component class whose name
+    collides with a generated colour utility.
+  */
+
+  /* The open-now dot. The only thing on the page that pulses. */
+  .pulse-dot {
+    position: relative;
+  }
+
+  .pulse-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: inherit;
+    animation: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    70%,
+    100% {
+      opacity: 0;
+      transform: scale(2.6);
+    }
   }
 }
 
@@ -260,8 +675,38 @@
   html {
     scroll-behavior: auto;
   }
-  .glow-card,
+
+  .slab,
+  .slab::before,
+  .slab::after,
   .fan-card {
     transition: none;
+  }
+
+  /* No opening deal — the hand is simply already on the table. */
+  .fan-card {
+    animation: none;
+  }
+
+  /* No sweep and no lift — the hairline still confirms the hover. */
+  .slab:hover,
+  .slab:focus-within {
+    transform: none;
+  }
+
+  .slab::after {
+    display: none;
+  }
+
+  .pulse-dot::after {
+    animation: none;
+  }
+
+  /*
+    The ground stays — it's colour and texture, not motion. Only the drift
+    stops, which is the part that could register as movement.
+  */
+  .ambient-wash {
+    animation: none;
   }
 }

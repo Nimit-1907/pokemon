@@ -4,25 +4,31 @@ import { useMemo, useState } from "react";
 import { PackageOpen, Search } from "lucide-react";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Input } from "@/components/ui/input";
+import { ALL_PRODUCTS } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import type { Collection, Product } from "@/types";
-
-const ALL = "All Products";
 
 export function CollectionProducts({
   collection,
   products,
+  /*
+    Which filters to offer. Defaults to everything the collection stocks, but
+    the page passes a narrowed list when it's showing a sample — a filter that
+    leads to an empty grid is worse than no filter.
+  */
+  categories = collection.categories,
 }: {
   collection: Collection;
   products: Product[];
+  categories?: string[];
 }) {
-  const [category, setCategory] = useState<string>(ALL);
+  const [category, setCategory] = useState<string>(ALL_PRODUCTS);
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
-      const matchesCategory = category === ALL || p.category === category;
+      const matchesCategory = category === ALL_PRODUCTS || p.category === category;
       const matchesQuery =
         !q ||
         p.name.toLowerCase().includes(q) ||
@@ -33,7 +39,7 @@ export function CollectionProducts({
 
   // Count per category for the sidebar
   const countFor = (cat: string) =>
-    cat === ALL
+    cat === ALL_PRODUCTS
       ? products.length
       : products.filter((p) => p.category === cat).length;
 
@@ -61,7 +67,7 @@ export function CollectionProducts({
           The negative margin cancels that padding so spacing is unchanged.
         */}
         <div className="no-scrollbar -mx-4 -my-1 flex scroll-pl-4 gap-2 overflow-x-auto px-4 py-1 sm:-mx-6 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:my-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:py-0">
-          {collection.categories.map((cat) => {
+          {categories.map((cat) => {
             const active = category === cat;
             return (
               <button
@@ -117,7 +123,7 @@ export function CollectionProducts({
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-14 text-center sm:py-20">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-section-tight text-center">
             <PackageOpen className="size-10 text-muted-foreground/50" />
             <p className="mt-4 text-h3 font-semibold text-foreground">
               No products found

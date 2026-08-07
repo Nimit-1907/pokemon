@@ -11,15 +11,22 @@ export function BrandLogo({ className }: { className?: string }) {
       className={cn("group flex items-center gap-2.5", className)}
       aria-label="Emerald Cards & Games — home"
     >
-      <span className="relative grid size-9 shrink-0 place-items-center">
+      {/*
+        The whole badge, never a crop. It was briefly cut down to the shield to
+        avoid repeating the lettering it carries, but this artwork has no clean
+        sub-shape — the gem's lower points sit behind the banner, so every crop
+        clips something and reads as a broken image. Whole and small beats
+        neat and cut.
+      */}
+      <span className="relative grid size-10 shrink-0 place-items-center">
         <Image
           src={asset("/images/logo.webp")}
           alt=""
           aria-hidden
-          width={72}
-          height={72}
+          width={96}
+          height={96}
           priority
-          className="size-9 object-contain drop-shadow-[0_0_10px_rgba(85,231,27,0.5)] transition-transform duration-300 group-hover:scale-110"
+          className="size-10 object-contain drop-shadow-[0_0_10px_rgba(62,221,107,0.45)] transition-transform duration-300 group-hover:scale-110"
         />
       </span>
       <span className="flex flex-col leading-none">

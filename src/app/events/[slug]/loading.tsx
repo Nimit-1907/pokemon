@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Loading() {
   return (
     <section>
-      <Container className="py-10 sm:py-14">
+      <Container className="py-section-tight">
         <Skeleton className="h-4 w-32" />
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
           <div className="space-y-4">

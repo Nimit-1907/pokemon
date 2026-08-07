@@ -5,15 +5,17 @@ import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 import { Reveal } from "@/components/motion/Reveal";
+import { HoursList } from "@/components/shared/HoursList";
 import { Button } from "@/components/ui/button";
 import { asset } from "@/lib/asset";
 import { site } from "@/lib/site";
+import { mapsHref, telHref } from "@/lib/contact";
 
 const STORE_IMAGE = asset("/images/store-home.webp");
 
 export function AboutSection() {
   return (
-    <section className="relative overflow-hidden py-12 sm:py-16 lg:py-20">
+    <section className="band overflow-hidden py-section">
       {/* Decorative emerald gem, far right */}
       <div
         aria-hidden
@@ -21,21 +23,21 @@ export function AboutSection() {
         style={{
           clipPath: "polygon(35% 5%, 65% 5%, 92% 40%, 50% 96%, 8% 40%)",
           background:
-            "linear-gradient(150deg, rgba(85,231,27,0.5), rgba(58,165,19,0.15))",
+            "linear-gradient(150deg, rgba(62,221,107,0.5), rgba(27,158,75,0.15))",
         }}
       />
 
       <Container className="relative">
         <Reveal>
-          <SectionHeading title="About Us" />
+          <SectionHeading eyebrow="1555 Talbot Rd, Windsor" title="Visit the shop" />
         </Reveal>
 
         <Reveal
           delay={0.05}
-          className="grid items-stretch gap-4 sm:gap-6 lg:grid-cols-[1.1fr_1fr_1fr]"
+          className="grid items-stretch gap-tile lg:grid-cols-[1.1fr_1fr_1fr]"
         >
           {/* Store image */}
-          <div className="glow-ring relative min-h-44 overflow-hidden rounded-xl border sm:min-h-56">
+          <div className="panel relative min-h-44 overflow-hidden rounded-xl border sm:min-h-56">
             <Image
               src={STORE_IMAGE}
               alt="Inside Emerald Cards & Games"
@@ -48,7 +50,7 @@ export function AboutSection() {
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(to top, rgba(5,5,5,0.6), transparent 60%)",
+                  "linear-gradient(to top, rgba(6,16,11,0.6), transparent 60%)",
               }}
             />
           </div>
@@ -56,28 +58,28 @@ export function AboutSection() {
           {/* Story */}
           <div className="flex flex-col justify-center">
             <p className="text-body text-muted-foreground">
-              Emerald Cards &amp; Games is Windsor&apos;s go-to destination for
-              trading cards and gaming. We offer a wide selection of products,
-              host exciting events, and build a strong community for collectors
-              and players alike.
+              A local game store in Windsor, Ontario. We stock singles, sealed
+              product and supplies across five card games, run tournaments and
+              league nights most weeks, and keep a play space open for whoever
+              wants to sit down and use it.
             </p>
             <Button
               asChild
               className="mt-5 w-full font-semibold sm:mt-6 sm:w-fit"
             >
               <Link href="/about">
-                Learn More About Us
+                More about us
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
           </div>
 
           {/* Contact + socials */}
-          <div className="glow-card flex flex-col justify-center gap-4 rounded-xl p-5 sm:p-6">
+          <div className="panel flex flex-col justify-center gap-4 rounded-xl p-5 sm:p-6">
             {/* Address and phone are tap-to-act on a phone. */}
             <ContactRow icon={<MapPin className="size-4" />}>
               <a
-                href={`https://maps.google.com/?q=${encodeURIComponent(site.mapQuery)}`}
+                href={mapsHref(site.mapQuery)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition-colors hover:text-brand"
@@ -89,18 +91,14 @@ export function AboutSection() {
             </ContactRow>
             <ContactRow icon={<Phone className="size-4" />}>
               <a
-                href={`tel:${site.phone.replace(/[^+\d]/g, "")}`}
+                href={telHref(site.phone)}
                 className="transition-colors hover:text-brand"
               >
                 {site.phone}
               </a>
             </ContactRow>
             <ContactRow icon={<Clock className="size-4" />}>
-              {site.hours.map((h) => (
-                <span key={h.days} className="block">
-                  {h.days}: {h.time}
-                </span>
-              ))}
+              <HoursList />
             </ContactRow>
 
             <SocialLinks className="mt-1" />
@@ -123,7 +121,7 @@ function ContactRow({
       <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
         {icon}
       </span>
-      <span>{children}</span>
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }

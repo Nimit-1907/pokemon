@@ -23,19 +23,30 @@ const APP = join(root, "src/app");
  * optional sources are reported and skipped; missing required ones fail.
  */
 const JOBS = [
-  // Brand mark — alpha preserved so it sits on any surface.
-  ["Logo_Without_Background.png", `${PUBLIC}/logo.webp`, { width: 512 }],
+  // The full lockup — alpha preserved so it sits on any surface.
+  ["Logo_Without_Background_1.png", `${PUBLIC}/logo.webp`, { width: 512 }],
+
+  /*
+    NOTE: there is deliberately no cropped "mark" variant.
+
+    This badge doesn't decompose. Cropping to the shield cuts it off at the
+    banner; cropping to the gem can't avoid catching the top of the "EMERALD"
+    lettering, because the gem's lower points sit behind the banner. Every
+    attempt reads as a clipped image rather than as a mark. The full lockup is
+    used everywhere instead — small, but whole.
+  */
 
   // The shield without the wordmark, for use as a watermark behind type —
   // the full logo's own lettering fights whatever sits on top of it.
+  //
+  // Cropped to the shield's own bounds: the artwork's banner starts at ~54%
+  // of the height, and the shield spans 11%–89% across. Cutting to those keeps
+  // the mark centred instead of floating in the source's transparent margins.
   [
-    "Logo_Without_Background.png",
+    "Logo_Without_Background_1.png",
     `${PUBLIC}/emblem.webp`,
-    { width: 512, crop: { top: 0.05, height: 0.43 } },
+    { width: 512, crop: { top: 0.045, height: 0.485, left: 0.1, width: 0.8 } },
   ],
-
-  // Hero backdrop, dimmed to a texture behind the copy.
-  ["Background_Banner.png", `${PUBLIC}/hero-backdrop.webp`, { width: 1600 }],
 
   // Store interiors.
   ["AboutUs_HomePage_StoreImage.png", `${PUBLIC}/store-home.webp`, { width: 1200 }],
@@ -66,9 +77,29 @@ const JOBS = [
     { width: 1400, optional: true },
   ],
 
-  // Favicon + touch icon (Next's file conventions pick these up by name).
-  ["Logo_Without_Background.png", `${APP}/icon.png`, { width: 256, format: "png" }],
-  ["Logo_Without_Background.png", `${APP}/apple-icon.png`, { width: 180, format: "png" }],
+  /*
+    Favicon + touch icon (Next's file conventions pick these up by name).
+
+    The whole badge, uncropped. `fit: "contain"` squares it off so browsers
+    don't stretch it into a square slot, and the source is close enough to
+    square that it still fills the tile.
+  */
+  ...[
+    [`${APP}/icon.png`, 256, null],
+    // Apple composites touch icons onto an opaque tile and ignores alpha, so
+    // this one is flattened onto the site's ink rather than left transparent.
+    [`${APP}/apple-icon.png`, 180, { r: 6, g: 16, b: 11, alpha: 1 }],
+  ].map(([out, size, flatten]) => [
+    "Logo_Without_Background_1.png",
+    out,
+    {
+      width: size,
+      height: size,
+      fit: "contain",
+      format: "png",
+      ...(flatten ? { flatten } : {}),
+    },
+  ]),
 
   // Social preview.
   [
@@ -111,19 +142,37 @@ async function run() {
       format = "webp",
       quality = 80,
       crop,
+      /** Pad colour for `fit: "contain"`. Transparent unless given. */
+      background = { r: 0, g: 0, b: 0, alpha: 0 },
+      /** Composite onto an opaque colour — for icons that can't be transparent. */
+      flatten,
     } = opts;
 
     let pipeline = sharp(join(SRC, name));
     if (crop) {
       const meta = await pipeline.metadata();
+      // Fractions of the source, so a re-cut source doesn't need pixel maths.
+      // `left`/`width` default to the full width for top-and-tail crops.
       pipeline = pipeline.extract({
-        left: 0,
+        left: Math.round(meta.width * (crop.left ?? 0)),
         top: Math.round(meta.height * crop.top),
-        width: meta.width,
+        width: Math.round(meta.width * (crop.width ?? 1)),
         height: Math.round(meta.height * crop.height),
       });
     }
-    pipeline = pipeline.resize(width, height, { fit, withoutEnlargement: true });
+    /*
+      Flatten first. sharp orders `flatten` ahead of `resize` internally
+      regardless of call order, so flattening afterwards leaves the transparent
+      padding that `fit: "contain"` just added — the icon came out with clear
+      corners and an opaque middle. Doing it here, and padding with the same
+      colour, gives a uniformly opaque tile.
+    */
+    if (flatten) pipeline = pipeline.flatten({ background: flatten });
+    pipeline = pipeline.resize(width, height, {
+      fit,
+      background: flatten ?? background,
+      withoutEnlargement: true,
+    });
 
     const buf = await (format === "webp"
       ? pipeline.webp({ quality })

@@ -6,16 +6,17 @@ import { collections } from "@/lib/data";
 
 export function FeaturedCollections() {
   return (
-    <section className="py-12 sm:py-16 lg:py-20">
+    <section id="collections" className="band scroll-mt-20 py-section">
       <Container>
         <Reveal>
           <SectionHeading
-            title="Featured Collection"
+            eyebrow="Five card games"
+            title="Shop by game"
             viewAllHref="/collections"
-            viewAllLabel="View All Collections"
+            viewAllLabel="All collections"
           />
         </Reveal>
-        <StaggerGrid className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+        <StaggerGrid className="grid grid-cols-2 gap-tile sm:grid-cols-3 lg:grid-cols-5">
           {collections.map((collection) => (
             <StaggerItem key={collection.slug}>
               <CollectionCard collection={collection} />

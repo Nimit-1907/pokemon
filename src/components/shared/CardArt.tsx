@@ -21,6 +21,7 @@ export function CardArt({
   compact = false,
   /** Where the lockup sits — useful when a card is partly overlapped. */
   align = "center",
+  imageFit = "cover",
 }: {
   name: string;
   tagline?: string;
@@ -33,6 +34,13 @@ export function CardArt({
   className?: string;
   compact?: boolean;
   align?: "center" | "start" | "end";
+  /**
+   * How the artwork fills the frame. Posters and banners are shot to fill, so
+   * they `cover`. Product art is portrait card scans and transparent set
+   * logos — cropping those to a square tile beheads the card and clips the
+   * lockup, so they `contain` and let the gradient show around them.
+   */
+  imageFit?: "cover" | "contain";
 }) {
   return (
     <div
@@ -43,14 +51,34 @@ export function CardArt({
       }}
     >
       {image ? (
-        <Image
-          src={asset(image)}
-          alt={name}
-          fill
-          sizes={sizes}
-          priority={priority}
-          className="object-cover"
-        />
+        <>
+          {/*
+            Contained art floats on the gradient, so it gets the sheen and a
+            drop shadow to sit it on the surface rather than look pasted on.
+          */}
+          {imageFit === "contain" && (
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(120% 90% at 30% 15%, rgba(255,255,255,0.22), transparent 60%)",
+              }}
+            />
+          )}
+          <Image
+            src={asset(image)}
+            alt={name}
+            fill
+            sizes={sizes}
+            priority={priority}
+            className={
+              imageFit === "contain"
+                ? "object-contain p-[9%] drop-shadow-[0_6px_16px_rgba(0,0,0,0.45)]"
+                : "object-cover"
+            }
+          />
+        </>
       ) : (
         <>
           {/* Radial sheen */}

@@ -1,18 +1,33 @@
 import Link from "next/link";
-import { Clock, MapPin, Phone } from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { SocialLinks } from "@/components/shared/SocialLinks";
+import { HoursList } from "@/components/shared/HoursList";
+import { StoreStatus } from "@/components/shared/StoreStatus";
 import { Container } from "@/components/layout/Container";
 import { collections } from "@/lib/data";
 import { nav, site } from "@/lib/site";
+import { mapsHref, telHref } from "@/lib/contact";
+import { showPrices } from "@/lib/flags";
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-[#080808]">
-      <Container className="py-10 sm:py-14">
-        <div className="grid gap-8 sm:gap-10 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="mt-auto border-t border-border bg-surface-1">
+      {/*
+        The two-column grid below and its internal rhythm are tuned by hand;
+        only the outer band moves onto the fluid scale, so the footer keeps
+        growing past 640px instead of freezing at 56px.
+      */}
+      <Container className="py-section-tight">
+        {/*
+          Two columns from the smallest screen. The link lists are short and
+          narrow, so stacking all four blocks made the footer taller than the
+          viewport on a phone for no gain. Brand and Visit still span the full
+          width — they carry wrapping text and the hours table.
+        */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-y-10 lg:grid-cols-4">
           {/* Brand */}
-          <div className="space-y-4">
+          <div className="col-span-2 space-y-3 sm:space-y-4 lg:col-span-1">
             <BrandLogo />
             <p className="max-w-xs text-body-sm text-muted-foreground">
               {site.description}
@@ -40,42 +55,71 @@ export function Footer() {
           </FooterCol>
 
           {/* Visit */}
-          <FooterCol title="Visit Us">
-            <li className="flex items-start gap-2.5 text-body-sm text-muted-foreground">
-              <MapPin className="mt-0.5 size-4 shrink-0 text-brand" />
-              <span>
-                {site.address.line}
-                <br />
-                {site.address.city}
-              </span>
-            </li>
-            <li className="flex items-center gap-2.5 text-body-sm text-muted-foreground">
-              <Phone className="size-4 shrink-0 text-brand" />
-              <a
-                href={`tel:${site.phone.replace(/[^+\d]/g, "")}`}
-                className="py-1 transition-colors hover:text-brand"
-              >
-                {site.phone}
-              </a>
-            </li>
-            <li className="flex items-start gap-2.5 text-body-sm text-muted-foreground">
-              <Clock className="mt-0.5 size-4 shrink-0 text-brand" />
-              <span>
-                {site.hours.map((h) => (
-                  <span key={h.days} className="block">
-                    {h.days}: {h.time}
-                  </span>
-                ))}
-              </span>
-            </li>
-          </FooterCol>
+          <div className="col-span-2 lg:col-span-1">
+            <h3 className="mb-3 text-eyebrow font-semibold uppercase text-brass sm:mb-4">
+              Visit us
+            </h3>
+
+            {/*
+              Phones already have the live status pinned in the sticky action
+              bar, so repeating it here only costs height.
+            */}
+            <StoreStatus variant="bare" className="mb-4 hidden md:inline-flex" />
+
+            <ul className="space-y-2.5">
+              <li className="flex items-start gap-2.5 text-body-sm text-muted-foreground">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-brass" />
+                <a
+                  href={mapsHref(site.mapQuery)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-brand"
+                >
+                  {site.address.line}
+                  <br />
+                  {site.address.city} {site.address.postalCode}
+                </a>
+              </li>
+              <li className="flex items-center gap-2.5 text-body-sm text-muted-foreground">
+                <Phone className="size-4 shrink-0 text-brass" />
+                <a
+                  href={telHref(site.phone)}
+                  className="font-data inline-block py-1 transition-colors hover:text-brand"
+                >
+                  {site.phone}
+                </a>
+              </li>
+            </ul>
+
+            {/*
+              No "Today" chip down here — the column is too narrow to fit it
+              alongside a time range without wrapping every row, and the live
+              status (footer on desktop, sticky bar on phones) already says
+              where the store is right now.
+            */}
+            <HoursList
+              className="mt-3 border-t border-border pt-3 sm:mt-4 sm:pt-4"
+              highlightToday={false}
+            />
+          </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-caption text-muted-foreground sm:flex-row">
+        <div className="mt-8 flex flex-col items-center justify-between gap-1.5 border-t border-border pt-5 text-center text-caption text-muted-foreground sm:mt-12 sm:gap-3 sm:flex-row sm:pt-6 sm:text-left">
+          {/*
+            No `new Date()` here. On a static export it would freeze to the
+            build date and quietly go stale — a hardcoded start year with no
+            end is both honest and maintenance-free.
+          */}
+          <p>© Emerald Cards &amp; Games. All rights reserved.</p>
           <p>
-            © {new Date().getFullYear()} {site.name}. All rights reserved.
+            {/*
+              States the currency once, for every price on the site. Suppressed
+              with the prices themselves — otherwise it refers to nothing.
+            */}
+            {showPrices
+              ? `Prices in Canadian dollars · ${site.taxName} added at the till`
+              : "Windsor, Ontario · Trading cards & gaming"}
           </p>
-          <p>Windsor, Ontario · Trading cards &amp; gaming since day one.</p>
         </div>
       </Container>
     </footer>
@@ -91,10 +135,14 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h3 className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-foreground">
+      <h3 className="mb-2 text-eyebrow font-semibold uppercase text-brass sm:mb-4">
         {title}
       </h3>
-      <ul className="space-y-2.5">{children}</ul>
+      {/*
+        The list items carry their own vertical padding for the tap target, so
+        on a phone the extra gap between them is redundant height.
+      */}
+      <ul className="space-y-0.5 sm:space-y-2.5">{children}</ul>
     </div>
   );
 }
@@ -111,4 +159,3 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
     </li>
   );
 }
-

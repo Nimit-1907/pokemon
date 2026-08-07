@@ -16,7 +16,7 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="glow-ring flex flex-col items-center justify-center rounded-2xl border p-10 text-center">
+      <div className="panel flex flex-col items-center justify-center rounded-2xl border p-10 text-center">
         <CheckCircle2 className="size-12 text-brand" />
         <h3 className="mt-4 font-display text-h2 font-bold uppercase text-foreground">
           Message sent
@@ -46,14 +46,26 @@ export function ContactForm() {
     >
       <div className="grid gap-5">
         <div className="grid gap-4 sm:grid-cols-2">
+          {/*
+            `autoComplete` lets the browser fill these from the visitor's saved
+            profile — one tap instead of two typed fields on a phone. Without it
+            Chrome flags the form and offers nothing.
+          */}
           <Field id="name" label="Name">
-            <Input id="name" name="name" required placeholder="Ash Ketchum" />
+            <Input
+              id="name"
+              name="name"
+              autoComplete="name"
+              required
+              placeholder="Ash Ketchum"
+            />
           </Field>
           <Field id="email" label="Email">
             <Input
               id="email"
               name="email"
               type="email"
+              autoComplete="email"
               required
               placeholder="you@example.com"
             />
@@ -78,7 +90,7 @@ export function ContactForm() {
         </Field>
         <Button type="submit" size="lg" className="w-full font-semibold sm:w-fit">
           <Send className="size-4" />
-          Send Message
+          Send message
         </Button>
       </div>
     </form>

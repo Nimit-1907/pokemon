@@ -45,7 +45,7 @@ export function SocialLinks({ className }: { className?: string }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={label}
-          className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground transition-all hover:border-brand/60 hover:text-brand hover:shadow-[0_0_18px_-6px_rgba(85,231,27,0.6)]"
+          className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground transition-all hover:border-brand/60 hover:text-brand hover:shadow-[0_0_18px_-6px_rgba(62,221,107,0.6)]"
         >
           <Icon className="size-4" />
         </a>

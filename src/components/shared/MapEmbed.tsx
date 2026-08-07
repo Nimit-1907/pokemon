@@ -10,7 +10,7 @@ export function MapEmbed({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "glow-ring relative overflow-hidden rounded-2xl border",
+        "panel relative overflow-hidden rounded-2xl border",
         className,
       )}
     >

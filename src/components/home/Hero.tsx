@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { asset } from "@/lib/asset";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
+import { StoreStatus } from "@/components/shared/StoreStatus";
 import { CardFan, FAN_CENTER, fanCards } from "@/components/home/CardFan";
+import { collectionsHref, eventsHref, showPrices } from "@/lib/flags";
 import { cn } from "@/lib/utils";
 
 const copyContainer: Variants = {
@@ -23,6 +23,18 @@ const copyItem: Variants = {
 
 /** How long a card is held at the front before the fan deals the next one. */
 const AUTOPLAY_MS = 3000;
+
+/*
+  The three things a first-time visitor is actually checking. Each is a fact
+  the site can stand behind — the hours in `site.ts` cover all seven days, the
+  calendar has an event most weeks, and every price in the catalogue is CAD.
+*/
+const ASSURANCES = [
+  // Dropped along with the prices — nothing on screen backs the claim up.
+  ...(showPrices ? ["Priced in CAD"] : []),
+  "Open 7 days",
+  "Events most weeks",
+];
 
 export function Hero() {
   // Which card is held at the front of the fan; starts on the middle one.
@@ -49,32 +61,27 @@ export function Hero() {
   }, [active, reduce]);
 
   return (
-    <section className="relative overflow-hidden border-b border-border">
+    /* No bottom border — the next section's `.band` seam draws the join, and
+       running both put a flat grey rule directly under a brass one. */
+    <section className="relative overflow-hidden">
       {/*
-        Store artwork as atmosphere. It's blurred and dimmed on purpose: the
-        source has the logo lockup dead centre, and left sharp it reads as a
-        second wordmark competing with the headline.
+        The ground is the back of a card — see `.card-back`. It replaced a
+        blurred photo of the shop, which at 14% opacity read as an image that
+        had failed to load rather than as a deliberate texture, and cost a
+        priority image fetch in front of the LCP for the privilege.
       */}
-      <Image
-        src={asset("/images/hero-backdrop.webp")}
-        alt=""
-        aria-hidden
-        fill
-        priority
-        sizes="100vw"
-        className="scale-110 object-cover opacity-20 blur-[3px]"
-      />
-      {/* Emerald atmosphere overlays */}
+      <div aria-hidden className="card-back absolute inset-0" />
+      {/* Emerald atmosphere, warmed with a low brass wash from the left */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(70% 60% at 78% 40%, rgba(85,231,27,0.16), transparent 60%), linear-gradient(180deg, rgba(5,5,5,0.7), rgba(5,5,5,0.95))",
+            "radial-gradient(70% 60% at 78% 40%, rgba(62,221,107,0.14), transparent 60%), radial-gradient(50% 50% at 5% 90%, rgba(217,168,87,0.09), transparent 65%), linear-gradient(180deg, rgba(6,16,11,0.72), rgba(6,16,11,0.96))",
         }}
       />
 
-      <Container className="relative grid items-center gap-8 py-10 sm:gap-10 sm:py-16 lg:grid-cols-2 lg:gap-6 lg:py-24">
+      <Container className="relative grid items-center gap-stack py-section lg:grid-cols-2 lg:gap-6">
         {/* Copy */}
         <motion.div
           className="text-center lg:text-left"
@@ -82,50 +89,47 @@ export function Hero() {
           initial={reduce ? false : "hidden"}
           animate={reduce ? false : "show"}
         >
-          <motion.span
+          {/*
+            The eyebrow slot used to hold a static "Windsor, Ontario · Trading
+            Cards & Gaming" pill, which repeated the headline and the strapline
+            underneath. The live open/closed state is the one thing worth
+            spending that position on.
+
+            Hidden below `md`, where the fixed bottom bar already carries the
+            same status — on a phone the two sat on screen together saying the
+            same thing.
+          */}
+          <motion.div
             variants={item}
-            /* No `tracking-*` here — the eyebrow token carries its own 0.1em. */
-            className="inline-flex max-w-full items-center gap-2 rounded-full border border-brand/40 bg-brand/5 px-3 py-1.5 text-eyebrow font-medium text-brand sm:px-4"
+            className="hidden justify-center md:flex lg:justify-start"
           >
-            {/*
-              The type scale bottoms out at a 360px phone; below that the full
-              line needs ~312px and wraps the pill onto two lines, so the
-              narrowest screens get the location alone — the copy underneath
-              already says what we sell.
-            */}
-            <span className="min-[360px]:hidden">Windsor, Ontario</span>
-            <span className="hidden min-[360px]:inline">
-              Windsor, Ontario · Trading Cards &amp; Gaming
-            </span>
-          </motion.span>
+            <StoreStatus />
+          </motion.div>
 
           <motion.h1
             variants={item}
-            className="mt-5 font-display text-display font-bold uppercase text-foreground sm:mt-6"
+            className="mt-5 font-display text-display font-extrabold uppercase text-foreground sm:mt-6"
           >
-            Your Ultimate
+            Windsor&apos;s
             <br />
-            Card <span className="text-glow">Destination</span>
+            <span className="text-brass">card shop</span>
           </motion.h1>
 
           <motion.p
             variants={item}
             className="mx-auto mt-4 max-w-md text-lead text-muted-foreground sm:mt-5 lg:mx-0"
           >
-            Pokémon, One Piece, Magic, Sports Cards, Disney Lorcana &amp; more!
+            Pokémon, One Piece, Magic, Lorcana and sports cards — singles,
+            sealed product and supplies, on the shelf on Talbot Road.
           </motion.p>
 
           <motion.div
             variants={item}
             className="mt-7 flex flex-col justify-center gap-3 sm:mt-8 sm:flex-row lg:justify-start"
           >
-            <Button
-              asChild
-              size="lg"
-              className="w-full font-semibold uppercase tracking-wide sm:w-auto"
-            >
-              <Link href="/collections">
-                Explore Collections
+            <Button asChild size="lg" className="w-full font-semibold sm:w-auto">
+              <Link href={collectionsHref}>
+                Browse collections
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -133,36 +137,57 @@ export function Hero() {
               asChild
               size="lg"
               variant="outline"
-              className="w-full border-border font-semibold uppercase tracking-wide hover:border-brand/60 hover:text-brand sm:w-auto"
+              className="w-full font-semibold hover:border-brand/60 hover:text-brand sm:w-auto"
             >
-              <Link href="/events">
+              <Link href={eventsHref}>
                 <Calendar className="size-4" />
-                Upcoming Events
+                What&apos;s on
               </Link>
             </Button>
           </motion.div>
 
+          {/* Assurances */}
+          <motion.ul
+            variants={item}
+            className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-caption text-muted-foreground lg:justify-start"
+          >
+            {ASSURANCES.map((line, i) => (
+              <li key={line} className="flex items-center gap-x-4">
+                {i > 0 && (
+                  <span aria-hidden className="text-border-strong">
+                    ·
+                  </span>
+                )}
+                {line}
+              </li>
+            ))}
+          </motion.ul>
+
           {/* One dot per card — picking one rotates it to the front of the fan */}
           <motion.div
             variants={item}
-            className="mt-7 flex justify-center gap-1 sm:mt-8 lg:justify-start"
+            className="mt-6 flex justify-center gap-1 lg:justify-start"
           >
             {fanCards.map((card, i) => (
-              /* Padding gives each dot a finger-sized hit area on touch. */
+              /*
+                Padding gives each dot a finger-sized hit area. At `px-1.5` the
+                inactive dots measured 18px wide — under the 24x24 minimum
+                (WCAG 2.5.8). The negative margin keeps the visual row height.
+              */
               <button
                 key={card.slug}
                 type="button"
                 aria-label={`Show ${card.collection.name}`}
                 aria-current={active === i}
                 onClick={() => setActive(i)}
-                className="group -my-3 px-1.5 py-3"
+                className="group -my-3 px-2.5 py-3"
               >
                 <span
                   className={cn(
-                    "block h-2 rounded-full transition-all",
+                    "block h-1.5 rounded-full transition-all",
                     active === i
-                      ? "w-6 bg-brand shadow-[0_0_10px_rgba(85,231,27,0.7)]"
-                      : "w-2 bg-muted-foreground/40 group-hover:bg-muted-foreground/70",
+                      ? "w-6 bg-brass"
+                      : "w-1.5 bg-muted-foreground/40 group-hover:bg-muted-foreground/70",
                   )}
                 />
               </button>
@@ -170,12 +195,16 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Card fan */}
+        {/*
+          Card fan. A fade only — the fan deals itself out of a stack on mount
+          (see `CardFan`), and scaling the whole group at the same time turned
+          one clear gesture into two competing ones.
+        */}
         <motion.div
           className="order-first lg:order-last"
-          initial={reduce ? false : { opacity: 0, scale: 0.9 }}
-          animate={reduce ? false : { opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+          initial={reduce ? false : { opacity: 0 }}
+          animate={reduce ? false : { opacity: 1 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <CardFan active={active} onActiveChange={setActive} />
         </motion.div>

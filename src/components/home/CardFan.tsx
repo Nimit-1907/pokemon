@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import { useRef } from "react";
 import { CardArt } from "@/components/shared/CardArt";
 import { getCollection } from "@/lib/data";
 import type { CollectionSlug } from "@/types";
@@ -49,6 +50,15 @@ export const fanCards = (
 const SWIPE_DISTANCE = 40;
 const SWIPE_VELOCITY = 300;
 
+/** How far the deck leans toward the pointer, in degrees at the far edge. */
+const TILT_Y = 13;
+const TILT_X = 9;
+
+/** The opening deal: how long before the first card leaves the stack, and the
+ *  gap between each card after it. */
+const DEAL_DELAY_MS = 220;
+const DEAL_STAGGER_MS = 90;
+
 /**
  * A fanned spread of trading cards — the hero's signature visual.
  * `active` is the index of the card held at the front; the rest rotate around
@@ -66,6 +76,33 @@ export function CardFan({
 }) {
   const reduce = useReducedMotion();
   const swipeable = Boolean(onActiveChange);
+  const stage = useRef<HTMLDivElement>(null);
+
+  /*
+    Lean the deck toward the pointer. Cards in a hand catch the light as you
+    turn them, and a flat fan on a flat page never does — this is the whole
+    reason the stage carries a perspective. Springs rather than raw pointer
+    values so it settles instead of tracking twitchily, and mouse-only: on a
+    touch screen the same events fire mid-swipe and fight the drag.
+  */
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const spring = { stiffness: 110, damping: 18, mass: 0.6 };
+  const rotateY = useSpring(rawX, spring);
+  const rotateX = useSpring(rawY, spring);
+
+  const lean = (event: React.PointerEvent) => {
+    if (reduce || event.pointerType !== "mouse") return;
+    const box = stage.current?.getBoundingClientRect();
+    if (!box) return;
+    rawX.set(((event.clientX - box.left) / box.width - 0.5) * 2 * TILT_Y);
+    rawY.set(((event.clientY - box.top) / box.height - 0.5) * -2 * TILT_X);
+  };
+
+  const level = () => {
+    rawX.set(0);
+    rawY.set(0);
+  };
 
   /** +1 deals the card on the right to the front, -1 the one on the left. */
   const advance = (direction: number) =>
@@ -75,6 +112,7 @@ export function CardFan({
 
   return (
     <motion.div
+      ref={stage}
       // `drag` leaves touch-action: pan-y in place, so the page still scrolls.
       drag={swipeable ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
@@ -89,59 +127,75 @@ export function CardFan({
         )
           advance(-1);
       }}
+      onPointerMove={lean}
+      onPointerLeave={level}
       className={cn(
-        "relative mx-auto aspect-[4/3] w-full max-w-sm [--fan-spread:0.72]",
+        "relative mx-auto aspect-[4/3] w-full max-w-sm [--fan-spread:0.72] [perspective:1400px]",
         "sm:max-w-md sm:[--fan-spread:0.85]",
         "lg:max-w-lg lg:[--fan-spread:1]",
         swipeable && "cursor-grab touch-pan-y select-none active:cursor-grabbing",
         className,
       )}
     >
-      {/* Emerald glow pool behind the cards */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 size-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
-        style={{ background: "rgba(85,231,27,0.22)" }}
-      />
-      {fanCards.map((card, i) => {
-        // Rotate the deck so the active card lands in the centre slot.
-        const slot =
-          SLOTS[(i - active + FAN_CENTER + SLOTS.length * 2) % SLOTS.length];
-        const centered = slot.align === "center";
-        return (
-          <div
-            key={card.slug}
-            className="fan-card absolute left-1/2 top-1/2 w-[30%]"
-            style={{
-              transform: [
-                "translate(-50%, -50%)",
-                `translate(calc(${slot.x * 100}% * var(--fan-spread)), calc(${slot.y * 100}% * var(--fan-spread)))`,
-                `rotate(calc(${slot.rotate}deg * var(--fan-spread)))`,
-                `scale(${slot.scale})`,
-              ].join(" "),
-              zIndex: slot.z,
-            }}
-          >
-            <div className="overflow-hidden rounded-lg border border-white/15 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)] ring-1 ring-black/40 sm:rounded-xl">
-              <CardArt
-                /* Only the front card has room for a long name. */
-                name={
-                  centered
-                    ? card.collection.name
-                    : (card.short ?? card.collection.name)
-                }
-                gradient={card.collection.gradient}
-                image={card.collection.image}
-                sizes="(min-width: 1024px) 160px, 30vw"
-                priority
-                className="aspect-[3/4] w-full"
-                compact
-                align={slot.align}
-              />
+      <motion.div
+        className="absolute inset-0 [transform-style:preserve-3d]"
+        style={{ rotateX, rotateY }}
+      >
+        {/* Emerald glow pool behind the cards */}
+        <div
+          aria-hidden
+          className="absolute left-1/2 top-1/2 size-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+          style={{ background: "rgba(62,221,107,0.22)" }}
+        />
+        {fanCards.map((card, i) => {
+          // Rotate the deck so the active card lands in the centre slot.
+          const slot =
+            SLOTS[(i - active + FAN_CENTER + SLOTS.length * 2) % SLOTS.length];
+          const centered = slot.align === "center";
+          return (
+            <div
+              key={card.slug}
+              className="fan-card absolute left-1/2 top-1/2 w-[30%]"
+              style={
+                {
+                  transform: [
+                    "translate(-50%, -50%)",
+                    `translate(calc(${slot.x * 100}% * var(--fan-spread)), calc(${slot.y * 100}% * var(--fan-spread)))`,
+                    `rotate(calc(${slot.rotate}deg * var(--fan-spread)))`,
+                    `scale(${slot.scale})`,
+                  ].join(" "),
+                  /*
+                    Where this card starts the opening deal: squared up in the
+                    stack, with a shade of rotation each so the pile has a
+                    hand-made edge instead of looking like a single card.
+                  */
+                  "--stack": `translate(-50%, -50%) rotate(${(i - FAN_CENTER) * 1.2}deg) scale(0.94)`,
+                  "--deal-delay": `${DEAL_DELAY_MS + i * DEAL_STAGGER_MS}ms`,
+                  zIndex: slot.z,
+                } as React.CSSProperties
+              }
+            >
+              <div className="overflow-hidden rounded-lg border border-white/15 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)] ring-1 ring-black/40 sm:rounded-xl">
+                <CardArt
+                  /* Only the front card has room for a long name. */
+                  name={
+                    centered
+                      ? card.collection.name
+                      : (card.short ?? card.collection.name)
+                  }
+                  gradient={card.collection.gradient}
+                  image={card.collection.image}
+                  sizes="(min-width: 1024px) 160px, 30vw"
+                  priority
+                  className="aspect-[3/4] w-full"
+                  compact
+                  align={slot.align}
+                />
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </motion.div>
     </motion.div>
   );
 }

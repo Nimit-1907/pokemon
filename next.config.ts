@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
     working when DHCP hands the machine a different address. Dev-only; it has no
     effect on the static export.
   */
-  allowedDevOrigins: ["192.168.1.*"],
+  allowedDevOrigins: ["192.168.*.*"],
   images: {
     // Static export can't use the default image optimizer. Artwork in
     // `public/images` is pre-sized by `scripts/optimize-images.mjs` instead.

@@ -5,7 +5,7 @@ export default function Loading() {
   return (
     <>
       <section className="border-b border-border">
-        <Container className="py-10 sm:py-14">
+        <Container className="py-section-tight">
           <Skeleton className="h-4 w-40" />
           <div className="mt-6 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl space-y-3">
@@ -18,7 +18,7 @@ export default function Loading() {
         </Container>
       </section>
 
-      <section className="py-12">
+      <section className="py-section">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
             <div className="hidden space-y-2 lg:block">
