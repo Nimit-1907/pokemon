@@ -228,7 +228,7 @@ export const products: Product[] = [
   { id: "pk-7", name: "Temporal Forces", collection: "pokemon", category: "Booster Boxes", type: "Booster Box", price: 129.99, gradient: { from: "#7c4dbd", to: "#2a1a4a" }, image: "/images/products/pk-7.webp" },
   { id: "pk-8", name: "Fusion Strike", collection: "pokemon", category: "Booster Packs", type: "Booster Pack", price: 4.99, gradient: { from: "#e0679b", to: "#3a1428" }, image: "/images/products/pk-8.webp" },
   { id: "pk-9", name: "Charizard ex", collection: "pokemon", category: "Singles", type: "Single Card", price: 89.99, gradient: { from: "#ff7a1a", to: "#7a1414" }, image: "/images/products/pk-9.webp" },
-  { id: "pk-10", name: "Premium Card Sleeves", collection: "pokemon", category: "Accessories", type: "Accessory", price: 12.99, gradient: { from: "#3fae14", to: "#123a08" } },
+  { id: "pk-10", name: "Premium Card Sleeves", collection: "pokemon", category: "Accessories", type: "Accessory", price: 12.99, gradient: { from: "#3fae14", to: "#123a08" }, image: "/images/products/pk-10.webp" },
 
   // One Piece
   { id: "op-1", name: "Romance Dawn", collection: "one-piece", category: "Booster Boxes", type: "Booster Box", price: 119.99, gradient: { from: "#e23b3b", to: "#7a1414" }, image: "/images/products/op-1.webp" },
@@ -237,7 +237,7 @@ export const products: Product[] = [
   { id: "op-4", name: "Worst Generation", collection: "one-piece", category: "Starter Decks", type: "Starter Deck", price: 14.99, gradient: { from: "#8b2fd1", to: "#2a1a4a" }, image: "/images/products/op-4.webp" },
   { id: "op-5", name: "Wings of Captain", collection: "one-piece", category: "Booster Packs", type: "Booster Pack", price: 5.49, gradient: { from: "#2f7fd1", to: "#123a63" }, image: "/images/products/op-5.webp" },
   { id: "op-6", name: "Monkey D. Luffy", collection: "one-piece", category: "Singles", type: "Leader Card", price: 34.99, gradient: { from: "#e23b3b", to: "#3a1010" }, image: "/images/products/op-6.webp" },
-  { id: "op-7", name: "Playmat — Grand Line", collection: "one-piece", category: "Accessories", type: "Accessory", price: 24.99, gradient: { from: "#3fae14", to: "#123a08" } },
+  { id: "op-7", name: "Playmat — Grand Line", collection: "one-piece", category: "Accessories", type: "Accessory", price: 24.99, gradient: { from: "#3fae14", to: "#123a08" }, image: "/images/products/op-7.webp" },
 
   // Magic: The Gathering
   { id: "mg-1", name: "Murders at Karlov Manor", collection: "magic", category: "Booster Boxes", type: "Play Booster Box", price: 129.99, gradient: { from: "#6b5b95", to: "#241b30" }, image: "/images/products/mg-1.webp" },
@@ -246,7 +246,7 @@ export const products: Product[] = [
   { id: "mg-4", name: "Ravnica Remastered Bundle", collection: "magic", category: "Bundles", type: "Bundle", price: 49.99, gradient: { from: "#b5452f", to: "#3a1610" }, image: "/images/products/mg-4.webp" },
   { id: "mg-5", name: "Sol Ring — Foil", collection: "magic", category: "Singles", type: "Single Card", price: 19.99, gradient: { from: "#c9a227", to: "#3a2c08" }, image: "/images/products/mg-5.webp" },
   { id: "mg-6", name: "Ragavan, Nimble Pilferer", collection: "magic", category: "Singles", type: "Single Card", price: 59.99, gradient: { from: "#c0392b", to: "#3a100c" }, image: "/images/products/mg-6.webp" },
-  { id: "mg-7", name: "Dragon Shield Sleeves", collection: "magic", category: "Accessories", type: "Accessory", price: 11.99, gradient: { from: "#3fae14", to: "#123a08" } },
+  { id: "mg-7", name: "Dragon Shield Sleeves", collection: "magic", category: "Accessories", type: "Accessory", price: 11.99, gradient: { from: "#3fae14", to: "#123a08" }, image: "/images/products/mg-7.webp" },
 
   // Disney Lorcana
   { id: "dl-1", name: "Into the Inklands", collection: "disney-lorcana", category: "Booster Boxes", type: "Booster Box", price: 144.99, gradient: { from: "#7c4dbd", to: "#2a1a4a" }, image: "/images/products/dl-1.webp" },
@@ -255,7 +255,7 @@ export const products: Product[] = [
   { id: "dl-4", name: "Illumineer's Trove", collection: "disney-lorcana", category: "Illumineer's Trove", type: "Trove", price: 49.99, gradient: { from: "#5b3d8f", to: "#1f1436" }, image: "/images/products/dl-4.webp" },
   { id: "dl-5", name: "Elsa — Snow Queen", collection: "disney-lorcana", category: "Singles", type: "Single Card", price: 27.99, gradient: { from: "#4aa3df", to: "#153a5b" }, image: "/images/products/dl-5.webp" },
   { id: "dl-6", name: "Mickey — Brave Little Tailor", collection: "disney-lorcana", category: "Singles", type: "Single Card", price: 39.99, gradient: { from: "#c0392b", to: "#3a100c" }, image: "/images/products/dl-6.webp" },
-  { id: "dl-7", name: "Card Portfolio Binder", collection: "disney-lorcana", category: "Accessories", type: "Accessory", price: 18.99, gradient: { from: "#3fae14", to: "#123a08" } },
+  { id: "dl-7", name: "Card Portfolio Binder", collection: "disney-lorcana", category: "Accessories", type: "Accessory", price: 18.99, gradient: { from: "#3fae14", to: "#123a08" }, image: "/images/products/dl-7.webp" },
 
   // Sports Cards
   { id: "sp-1", name: "Prizm Basketball", collection: "sports-cards", category: "Hobby Boxes", type: "Hobby Box", price: 399.99, gradient: { from: "#2f7fd1", to: "#123a63" }, image: "/images/products/sp-1.webp" },

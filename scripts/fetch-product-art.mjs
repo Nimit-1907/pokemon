@@ -23,8 +23,10 @@
  * Bandai, so the stamp is unavoidable. Those cards are art-cropped to the panel
  * *above* the band instead of used whole — see `ART_CROPS.onePiece`.
  *
- * Sports cards and accessories have no free art source and are deliberately
- * absent — those tiles keep the gradient treatment.
+ * Sports cards and accessories have no card API behind them: those come from
+ * Openverse and from hand-picked Wikimedia Commons files respectively, and are
+ * CC-licensed rather than publisher-owned. Attribution for them is required —
+ * see `public/images/CREDITS.md`.
  *
  * Usage: node scripts/fetch-product-art.mjs [productId ...]
  */
@@ -36,6 +38,7 @@ import {
   ART_CROPS,
   get,
   limitlessOnePieceUrl,
+  commonsFile,
   openversePhoto,
   pause,
   ptcgCardUrl,
@@ -115,6 +118,27 @@ const SOURCES = {
     every pick here has been eyeballed before being committed.
   */
   "sp-7": { via: "openverse", q: "ice hockey players puck", pick: 3 },
+
+  /*
+    --- Accessories: hand-picked Wikimedia Commons files.
+
+    Search ranking is useless for card supplies — "card sleeves" returns
+    passport holders and Victorian trade cards — so these are pinned by title.
+    All four are CC BY-SA 4.0 and credited in `public/images/CREDITS.md`;
+    keep that file in step with this block.
+
+    Shots of identifiable people were rejected on likeness grounds, which are
+    separate from the copyright licence. The binder photo is cropped to the
+    pages for that reason: the full frame has bystanders in it.
+  */
+  "pk-10": { via: "commons", file: "Sleeved playing card.jpg" },
+  "op-7": { via: "commons", file: "Netrunner - Gateway starter decks.jpg" },
+  "mg-7": { via: "commons", file: "Magic the Gathering - Commander.jpg" },
+  "dl-7": {
+    via: "commons",
+    file: "Magic the Gathering - Trade.jpg",
+    crop: { left: 0, top: 0.52, width: 1, height: 0.44 },
+  },
 };
 
 const RESOLVERS = {
@@ -149,6 +173,12 @@ const RESOLVERS = {
     const url = await openversePhoto(s.q, s.pick);
     return url && { url, square: true };
   },
+
+  commons: async (s) => ({
+    url: commonsFile(s.file),
+    square: true,
+    crop: s.crop,
+  }),
 
   lorcast: async (s) => {
     const res = await get(
