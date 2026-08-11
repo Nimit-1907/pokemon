@@ -53,14 +53,13 @@ const JOBS = [
   ["AboutUs_MainPage_StoreImage.png", `${PUBLIC}/store-about.webp`, { width: 1400 }],
 
   /*
-    Collection posters and banners are NOT built here.
+    Collection art is NOT built here.
 
-    `build-collection-art.mjs` generates them from the public card APIs and
-    owns those outputs. They used to be cut from commissioned PNGs by this
-    script; those jobs were removed so a re-run can't silently restore the old
-    artwork over the generated set. To go back to commissioned art, add jobs
-    here again for `collections/<slug>.webp` and `banners/<slug>.webp` — this
-    script's output wins, because it runs against real source files.
+    `public/images/collections/<slug>.png` is one piece of hand-supplied 3:4 key
+    art per collection, dropped in as-is and used at every size. It was
+    generated from the card APIs for a while, by a `build-collection-art.mjs`
+    that no longer exists. No jobs here touch those files, so a re-run can't
+    overwrite the art.
   */
 
   /*

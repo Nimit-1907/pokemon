@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { CardArt } from "@/components/shared/CardArt";
 import { CollectionProducts } from "@/components/collection/CollectionProducts";
+import { PageTransition } from "@/components/motion/PageTransition";
 import {
   ALL_PRODUCTS,
   collections,
@@ -55,7 +56,7 @@ export default async function CollectionPage(
   );
 
   return (
-    <>
+    <PageTransition>
       {/* Header band */}
       <section className="relative overflow-hidden">
         <div
@@ -102,10 +103,16 @@ export default async function CollectionPage(
               name={collection.name}
               tagline={collection.tagline}
               gradient={collection.gradient}
-              image={collection.banner}
-              sizes="(min-width: 768px) 320px, 100vw"
+              image={collection.image}
+              sizes="(min-width: 768px) 256px, 176px"
               priority
-              className="h-40 w-full shrink-0 rounded-xl md:w-80"
+              /*
+                3:4, matching the artwork's own ratio — the key art is portrait,
+                so the old 2:1 letterbox cropped it to a midriff. Width is capped
+                rather than `w-full` because a full-bleed portrait on a phone is
+                taller than the viewport.
+              */
+              className="aspect-[3/4] w-44 shrink-0 self-center rounded-xl md:w-64"
             />
           </div>
         </Container>
@@ -121,6 +128,6 @@ export default async function CollectionPage(
           />
         </Container>
       </section>
-    </>
+    </PageTransition>
   );
 }

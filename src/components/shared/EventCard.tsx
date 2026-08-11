@@ -28,7 +28,7 @@ export function EventCard({ event }: { event: StoreEvent }) {
           <CardArt
             name={collection?.name ?? event.title}
             gradient={event.gradient}
-            image={collection?.banner}
+            image={collection?.image}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 80vw"
             className="aspect-[16/10] w-full"
             compact

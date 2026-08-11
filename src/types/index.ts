@@ -14,10 +14,12 @@ export interface Collection {
   description: string;
   /** Emerald-tinted gradient — the fallback when there's no artwork */
   gradient: { from: string; to: string };
-  /** Square poster art for cards and tiles. Optional: not every line has art */
+  /**
+   * 3:4 key art, used at every size — tiles, the hero fan, page headers, event
+   * cards. There used to be a separate wide `banner`, but once the art became
+   * portrait the two were the same file. Optional: not every line has art.
+   */
   image?: string;
-  /** Wide banner art for page headers and event cards */
-  banner?: string;
   /** Product categories for the sidebar filter */
   categories: string[];
 }

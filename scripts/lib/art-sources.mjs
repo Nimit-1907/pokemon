@@ -1,9 +1,9 @@
 /**
- * Shared plumbing for the two placeholder-art scripts:
- * `fetch-product-art.mjs` (product tiles) and `build-collection-art.mjs`
- * (collection posters and banners).
+ * Shared plumbing for `fetch-product-art.mjs`, which builds the placeholder
+ * product tiles. It was shared with a collection-art builder too, until that
+ * script was dropped in favour of hand-supplied key art.
  *
- * All four card sources are free and key-less. See the header of
+ * All the card sources are free and key-less. See the header of
  * `fetch-product-art.mjs` for the licensing position on the art itself.
  */
 
@@ -72,29 +72,12 @@ export function limitlessOnePieceUrl(cardSetId) {
   return `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/one-piece/${base.split("-")[0]}/${base}_EN.webp`;
 }
 
-/** Scryfall's own art crop — already frame-free, so no manual window needed. */
-export async function scryfallArtCrop(query) {
-  const res = await get(
-    `https://api.scryfall.com/cards/search?q=${encodeURIComponent(query)}&order=edhrec&unique=cards`,
-    { json: true },
-  );
-  const card = res.data?.[0];
-  return (
-    card?.image_uris?.art_crop ?? card?.card_faces?.[0]?.image_uris?.art_crop
-  );
-}
-
-/** Full-card image URLs for a Lorcast search, most relevant first. */
-export async function lorcastCards(query, count = 1) {
-  const res = await get(
-    `https://api.lorcast.com/v0/cards/search?q=${encodeURIComponent(query)}`,
-    { json: true },
-  );
-  return (res.results ?? [])
-    .map((c) => c.image_uris?.digital?.large)
-    .filter(Boolean)
-    .slice(0, count);
-}
+/*
+  Scryfall and Lorcast helpers used to live here, for the collection art
+  builder. That script is gone — the collection art is hand-supplied now — and
+  `fetch-product-art.mjs` has its own Scryfall/Lorcast fetchers, which want full
+  card images rather than art crops. Nothing was left calling these.
+*/
 
 /**
  * A commercially-licensed photograph from Openverse.
