@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useMotionValueEvent, useScroll } from "motion/react";
 import { ChevronDown, Menu, Navigation, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { Container } from "@/components/layout/Container";
@@ -33,16 +34,59 @@ function useIsActive() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
+/** How far down the page the header tightens up. */
+const CONDENSE_AT = 80;
+
 export function Navbar() {
   const isActive = useIsActive();
   const [open, setOpen] = useState(false);
 
+  /*
+    Past the first screen the header gives some height back and deepens, so a
+    long page reads as having been travelled rather than as one flat scroll.
+    `setState` with the same value is a no-op in React, so this is one render
+    per crossing rather than one per scroll event.
+  */
+  const [condensed, setCondensed] = useState(false);
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => setCondensed(y > CONDENSE_AT));
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-base/85 backdrop-blur-xl">
-      <Container className="flex h-16 items-center justify-between gap-4">
+    <header
+      /*
+        Lifts the header out of the route transition's root snapshot so it can
+        be told to hold still — see the `site-header` rules in `globals.css`.
+        Without it a sticky bar cross-fades against the content sliding beneath
+        it, and the whole viewport appears to flinch on every navigation.
+      */
+      style={{ viewTransitionName: "site-header" }}
+      className={cn(
+        "sticky top-0 z-50 border-b backdrop-blur-xl",
+        "transition-[background-color,border-color,box-shadow] duration-300 motion-reduce:transition-none",
+        condensed
+          ? "border-border-strong bg-base/95 shadow-[0_12px_30px_-22px_rgba(0,0,0,0.95)]"
+          : "border-border bg-base/85",
+      )}
+    >
+      <Container
+        className={cn(
+          "flex items-center justify-between gap-4",
+          "transition-[height] duration-300 motion-reduce:transition-none",
+          condensed ? "h-13" : "h-16",
+        )}
+      >
         {/* Left group: logo + nav sit together */}
         <div className="flex items-center gap-6 lg:gap-10">
-          <BrandLogo />
+          {/*
+            Scaled rather than resized: the badge and the wordmark shrink
+            together, and from the left, so the nav beside it doesn't shift.
+          */}
+          <BrandLogo
+            className={cn(
+              "origin-left transition-transform duration-300 motion-reduce:transition-none",
+              condensed && "scale-[0.82]",
+            )}
+          />
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-1 md:flex">

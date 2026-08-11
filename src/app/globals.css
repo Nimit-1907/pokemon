@@ -609,6 +609,98 @@
   }
 
   /*
+    Holographic foil, for the one card held at the front of the fan.
+
+    Two layers doing different jobs. The conic sweep is the diffraction — the
+    hue shift you get from tipping a foil card under a light — kept low in
+    saturation because a full-strength rainbow over artwork reads as a bug. The
+    radial on top is the specular hit, the bright spot that tells you there is
+    a light source at all. Together they are one light, which is the rule.
+
+    `--holo-x`/`--holo-y` come off the deck's pointer lean, not the raw cursor
+    (see `CardFan`), so the highlight belongs to the angle the card is being
+    held at.
+
+    `overlay`, not `color-dodge`. Dodge is the textbook foil blend and it was
+    the first thing tried here — but it brightens in proportion to what is
+    already there, so it behaves completely differently per card. Over the dark
+    space art it looked right; over the pale Lorcana card it saturated the
+    whole face to a milky haze and buried the artwork. Overlay keeps the
+    artwork's own tonality and tints instead of blowing out, which is the only
+    way one rule can sit on five very different illustrations.
+
+    Deliberately not a `.slab` treatment. Tiles already carry their own sweep,
+    and the note above `.tilt-card` explains why they get exactly one.
+  */
+  .holo-foil {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    opacity: 0.7;
+    background:
+      radial-gradient(
+        34% 26% at var(--holo-x, 50%) var(--holo-y, 50%),
+        rgba(255, 255, 255, 0.42),
+        transparent 68%
+      ),
+      conic-gradient(
+        from 200deg at var(--holo-x, 50%) var(--holo-y, 50%),
+        rgba(84, 216, 255, 0.32),
+        rgba(126, 255, 173, 0.3),
+        rgba(255, 233, 138, 0.34),
+        rgba(255, 140, 186, 0.28),
+        rgba(150, 154, 255, 0.32),
+        rgba(84, 216, 255, 0.32)
+      );
+    /* Fades in as a card rotates into the front slot, rather than snapping. */
+    animation: holo-in 0.5s ease-out both;
+  }
+
+  @keyframes holo-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /*
+    One pass of brass foil across the accent words of the headline, on arrival.
+
+    It sweeps once and stops. A looping shimmer on a headline is the single
+    clearest tell that a page came out of a template, and this face is heavy
+    enough that a repeating highlight would never stop pulling the eye.
+
+    The resting position is `0% 0`, which lands entirely inside the flat brass
+    run of the gradient — so if the animation never plays, the type is simply
+    brass rather than invisible. That matters: `-webkit-text-fill-color` is
+    transparent here, and text whose only colour comes from a keyframe is one
+    unsupported property away from disappearing.
+  */
+  .foil-sweep {
+    color: var(--brass);
+    background-image: linear-gradient(
+      100deg,
+      var(--brass) 0%,
+      var(--brass) 42%,
+      #fff3d6 50%,
+      var(--brass) 58%,
+      var(--brass) 100%
+    );
+    background-size: 250% 100%;
+    background-position: 0% 0;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: foil-sweep 1.15s cubic-bezier(0.3, 0, 0.2, 1) 1.05s backwards;
+  }
+
+  @keyframes foil-sweep {
+    from {
+      background-position: 100% 0;
+    }
+  }
+
+  /*
     The lean. `.slab` gives a tile the top edge and foil sweep of a card in a
     top-loader; this adds the 3D lean toward the pointer (see
     `motion/TiltCard.tsx`), so the sweep crosses a surface that's actually
@@ -633,6 +725,68 @@
     against the background. Don't reintroduce a component class whose name
     collides with a generated colour utility.
   */
+
+  /*
+    The contact form's confirmation mark — see `DrawnCheck` in `ContactForm`.
+
+    The dash lengths are the geometry, not round numbers: 145 is the
+    circumference of the r=23 ring (2πr), and 31 is the summed length of the
+    tick's two segments. They are declared a shade long so the stroke closes
+    cleanly rather than stopping a pixel short.
+  */
+  .draw-ring {
+    stroke-dasharray: 145;
+    stroke-dashoffset: 145;
+    animation: draw-stroke 0.55s ease-in-out forwards;
+  }
+
+  .draw-tick {
+    stroke-dasharray: 31;
+    stroke-dashoffset: 31;
+    /* Waits for the ring to close, then signs it. */
+    animation: draw-stroke 0.32s ease-out 0.36s forwards;
+  }
+
+  @keyframes draw-stroke {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /*
+    Loading placeholders. A narrow highlight crosses each one on a slow loop —
+    the same gesture `.slab` makes on the tiles these are standing in for, so a
+    page mid-load still looks like this site rather than like a generic shell.
+
+    `::after` rather than a background-position animation on the element
+    itself, because these carry a `bg-accent` fill that the sweep needs to
+    travel over rather than replace.
+  */
+  .skeleton-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skeleton-sweep::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--brand) 9%, transparent) 45%,
+      color-mix(in srgb, #fff 7%, transparent) 55%,
+      transparent
+    );
+    animation: skeleton-sweep 1.6s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-sweep {
+    to {
+      transform: translateX(100%);
+    }
+  }
 
   /* The open-now dot. The only thing on the page that pulses. */
   .pulse-dot {
@@ -659,6 +813,82 @@
       transform: scale(2.6);
     }
   }
+}
+
+/*
+  Route transitions. Driven by React's `<ViewTransition>` — see
+  `motion/PageTransition.tsx` for why that rather than a client-side wrapper.
+
+  These live outside `@layer components` on purpose: `::view-transition-*`
+  pseudo-elements are attached to the document root, not to any element a
+  utility class could reach, so there is nothing here for Tailwind's layering
+  to order against.
+
+  Kept short deliberately. A page transition is a cut, not a scene change —
+  past about a quarter of a second it stops reading as polish and starts
+  reading as the site being slow.
+*/
+::view-transition-old(.page-exit) {
+  animation: 130ms ease-in both page-fade reverse;
+}
+
+::view-transition-new(.page-enter) {
+  /*
+    Asymmetric, and the delay is the point: the outgoing page is gone before
+    the incoming one starts to show, so the two never cross-dissolve through
+    each other. The lift runs longer than the fade, so the page is fully
+    visible while it is still settling — arriving, rather than sliding in.
+  */
+  animation:
+    190ms ease-out 130ms both page-fade,
+    340ms cubic-bezier(0.22, 1, 0.36, 1) both page-lift;
+}
+
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-lift {
+  from {
+    translate: 0 8px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/*
+  The header is the fixed point. It is named so the browser lifts it out of the
+  root snapshot, then told not to animate — otherwise a sticky bar cross-fades
+  against content moving underneath it, and the whole viewport appears to
+  flinch. `display: none` on the old snapshot prevents two headers being
+  briefly stacked; the z-index keeps it over the transitioning content.
+*/
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/*
+  The transition overlay swallows clicks while it runs. At these durations a
+  visitor can easily aim at a link mid-animation, and losing that click feels
+  like the site ignoring them.
+*/
+::view-transition {
+  pointer-events: none;
 }
 
 /* Mobile carousels scroll by swipe — the bar is noise on a phone. */
@@ -703,10 +933,64 @@
   }
 
   /*
+    Placeholders hold still. The block itself stays — it is the thing saying
+    content is on its way, and removing it would leave a blank panel.
+  */
+  .skeleton-sweep::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  /*
+    The confirmation mark is simply already made. Note the offset has to be
+    zeroed as well as the animation stopped — the resting state of these
+    strokes is fully dashed out, so killing the animation alone would leave an
+    empty circle where the tick should be.
+  */
+  .draw-ring,
+  .draw-tick {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  /*
     The ground stays — it's colour and texture, not motion. Only the drift
     stops, which is the part that could register as movement.
   */
   .ambient-wash {
     animation: none;
+  }
+
+  /*
+    No foil pass on the headline. The gradient goes with it, because the type
+    is painted by `background-clip: text` — leaving the fill transparent with
+    nothing behind it would erase the headline rather than calm it down.
+  */
+  .foil-sweep {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  /*
+    The fan's front card stays matte. `CardFan` already declines to render the
+    foil under reduced motion; this covers the layer if it is ever reached by
+    another route.
+  */
+  .holo-foil {
+    display: none;
+  }
+
+  /*
+    Content swaps instantly instead of sliding. Directional movement across the
+    viewport is the most common trigger for motion sensitivity, and it is the
+    whole substance of a route transition — so there is nothing here worth
+    keeping at a lower dose.
+  */
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }

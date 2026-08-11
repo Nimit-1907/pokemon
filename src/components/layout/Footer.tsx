@@ -5,6 +5,7 @@ import { SocialLinks } from "@/components/shared/SocialLinks";
 import { HoursList } from "@/components/shared/HoursList";
 import { StoreStatus } from "@/components/shared/StoreStatus";
 import { Container } from "@/components/layout/Container";
+import { StaggerGrid, StaggerItem } from "@/components/motion/Reveal";
 import { collections } from "@/lib/data";
 import { nav, site } from "@/lib/site";
 import { mapsHref, telHref } from "@/lib/contact";
@@ -25,37 +26,47 @@ export function Footer() {
           viewport on a phone for no gain. Brand and Visit still span the full
           width — they carry wrapping text and the hours table.
         */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-y-10 lg:grid-cols-4">
+        {/*
+          The columns arrive in order as the footer comes into view. It is the
+          last thing on every page, and reaching it used to be the one moment
+          the site stopped moving entirely — four blocks appearing at once read
+          as the page having ended rather than as having been scrolled to.
+        */}
+        <StaggerGrid className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-y-10 lg:grid-cols-4">
           {/* Brand */}
-          <div className="col-span-2 space-y-3 sm:space-y-4 lg:col-span-1">
+          <StaggerItem className="col-span-2 space-y-3 sm:space-y-4 lg:col-span-1">
             <BrandLogo />
             <p className="max-w-xs text-body-sm text-muted-foreground">
               {site.description}
             </p>
             <SocialLinks />
-          </div>
+          </StaggerItem>
 
           {/* Explore */}
-          <FooterCol title="Explore">
-            {nav.map((item) => (
-              <FooterLink key={item.href} href={item.href}>
-                {item.label}
-              </FooterLink>
-            ))}
-            <FooterLink href="/contact">Contact</FooterLink>
-          </FooterCol>
+          <StaggerItem>
+            <FooterCol title="Explore">
+              {nav.map((item) => (
+                <FooterLink key={item.href} href={item.href}>
+                  {item.label}
+                </FooterLink>
+              ))}
+              <FooterLink href="/contact">Contact</FooterLink>
+            </FooterCol>
+          </StaggerItem>
 
           {/* Collections */}
-          <FooterCol title="Collections">
-            {collections.map((c) => (
-              <FooterLink key={c.slug} href={`/collections/${c.slug}`}>
-                {c.name}
-              </FooterLink>
-            ))}
-          </FooterCol>
+          <StaggerItem>
+            <FooterCol title="Collections">
+              {collections.map((c) => (
+                <FooterLink key={c.slug} href={`/collections/${c.slug}`}>
+                  {c.name}
+                </FooterLink>
+              ))}
+            </FooterCol>
+          </StaggerItem>
 
           {/* Visit */}
-          <div className="col-span-2 lg:col-span-1">
+          <StaggerItem className="col-span-2 lg:col-span-1">
             <h3 className="mb-3 text-eyebrow font-semibold uppercase text-brass sm:mb-4">
               Visit us
             </h3>
@@ -101,8 +112,8 @@ export function Footer() {
               className="mt-3 border-t border-border pt-3 sm:mt-4 sm:pt-4"
               highlightToday={false}
             />
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerGrid>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-1.5 border-t border-border pt-5 text-center text-caption text-muted-foreground sm:mt-12 sm:gap-3 sm:flex-row sm:pt-6 sm:text-left">
           {/*

@@ -1,6 +1,12 @@
 "use client";
 
-import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import { useRef } from "react";
 import { CardArt } from "@/components/shared/CardArt";
 import { getCollection } from "@/lib/data";
@@ -91,6 +97,19 @@ export function CardFan({
   const rotateY = useSpring(rawX, spring);
   const rotateX = useSpring(rawY, spring);
 
+  /*
+    Where the holographic highlight sits on the front card, tracked off the
+    same lean that tilts the deck. Foil doesn't have a fixed pattern — what you
+    see is the angle you're holding it at — so driving the sheen from the lean
+    rather than from raw cursor position is what makes it read as a property of
+    the card instead of as a light following the mouse.
+
+    Inverted against the rotation: leaning the top of the card away from you
+    should bring the highlight down its face, not up.
+  */
+  const holoX = useTransform(rotateY, [-TILT_Y, TILT_Y], ["78%", "22%"]);
+  const holoY = useTransform(rotateX, [-TILT_X, TILT_X], ["22%", "78%"]);
+
   const lean = (event: React.PointerEvent) => {
     if (reduce || event.pointerType !== "mouse") return;
     const box = stage.current?.getBoundingClientRect();
@@ -139,7 +158,14 @@ export function CardFan({
     >
       <motion.div
         className="absolute inset-0 [transform-style:preserve-3d]"
-        style={{ rotateX, rotateY }}
+        style={
+          {
+            rotateX,
+            rotateY,
+            "--holo-x": holoX,
+            "--holo-y": holoY,
+          } as React.CSSProperties
+        }
       >
         {/* Emerald glow pool behind the cards */}
         <div
@@ -175,7 +201,7 @@ export function CardFan({
                 } as React.CSSProperties
               }
             >
-              <div className="overflow-hidden rounded-lg border border-white/15 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)] ring-1 ring-black/40 sm:rounded-xl">
+              <div className="relative overflow-hidden rounded-lg border border-white/15 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)] ring-1 ring-black/40 sm:rounded-xl">
                 <CardArt
                   /* Only the front card has room for a long name. */
                   name={
@@ -193,6 +219,21 @@ export function CardFan({
                   /* Nothing beside a fanned card names it. */
                   labelled
                 />
+                {/*
+                  Foil, and only on the card being held at the front. Last in
+                  the box so it lies over the artwork without needing a z-index
+                  to climb above it.
+
+                  `globals.css` sets the rule this obeys: one light source per
+                  surface. The four angled cards stay matte, so the front one
+                  is unmistakably the subject — give all five a sheen and the
+                  fan becomes five things competing rather than a hand with one
+                  card held up out of it.
+
+                  Scoped to the fan. This must never reach a `.slab` tile,
+                  which already carries a sweep of its own.
+                */}
+                {centered && !reduce && <div aria-hidden className="holo-foil" />}
               </div>
             </div>
           );

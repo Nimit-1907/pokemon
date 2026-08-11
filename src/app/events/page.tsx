@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { EventSchedule } from "@/components/events/EventSchedule";
 import { ComingSoon } from "@/components/shared/ComingSoon";
+import { PageTransition } from "@/components/motion/PageTransition";
 import { sortedEvents } from "@/lib/data";
 import { site } from "@/lib/site";
 import { comingSoon, showPrices } from "@/lib/flags";
@@ -25,11 +26,13 @@ export default function EventsPage() {
   */
   if (comingSoon.eventsIndex) {
     return (
-      <ComingSoon
-        eyebrow="Tournaments & league nights"
-        title="Coming soon"
-        description="The full calendar is on its way. We run sanctioned events most weeks — call the shop and we'll tell you what's coming up."
-      />
+      <PageTransition>
+        <ComingSoon
+          eyebrow="Tournaments & league nights"
+          title="Coming soon"
+          description="The full calendar is on its way. We run sanctioned events most weeks — call the shop and we'll tell you what's coming up."
+        />
+      </PageTransition>
     );
   }
 
@@ -43,7 +46,7 @@ export default function EventsPage() {
 */
 function EventsIndex() {
   return (
-    <>
+    <PageTransition>
       <section className="relative overflow-hidden">
         <div
           aria-hidden
@@ -74,6 +77,6 @@ function EventsIndex() {
           <EventSchedule events={sortedEvents} />
         </Container>
       </section>
-    </>
+    </PageTransition>
   );
 }

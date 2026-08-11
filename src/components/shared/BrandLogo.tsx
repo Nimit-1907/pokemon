@@ -26,7 +26,7 @@ export function BrandLogo({ className }: { className?: string }) {
           width={96}
           height={96}
           priority
-          className="size-10 object-contain drop-shadow-[0_0_10px_rgba(62,221,107,0.45)] transition-transform duration-300 group-hover:scale-110"
+          className="size-10 object-contain transition-transform duration-300 group-hover:scale-110"
         />
       </span>
       <span className="flex flex-col leading-none">

@@ -1,13 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { motion, useReducedMotion, type Variants } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type Variants,
+} from "motion/react";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { StoreStatus } from "@/components/shared/StoreStatus";
 import { CardFan, FAN_CENTER, fanCards } from "@/components/home/CardFan";
+import { WordWipe } from "@/components/motion/WordWipe";
 import { collectionsHref, eventsHref, showPrices } from "@/lib/flags";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +53,20 @@ export function Hero() {
   const item = reduce ? undefined : copyItem;
 
   /*
+    Parallax. The fan and the atmosphere behind it climb slightly slower than
+    the page does, so scrolling off the hero separates them instead of sliding
+    one flat picture away. Small numbers on purpose — this should register as
+    depth, not as the hero coming apart.
+  */
+  const section = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: section,
+    offset: ["start start", "end start"],
+  });
+  const fanY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+
+  /*
     Deal the next card on a timer. The effect is keyed on `active`, so picking
     a dot or swiping the fan restarts the full countdown instead of leaving
     whatever was left of the previous one. Reduced motion opts out entirely —
@@ -63,7 +84,7 @@ export function Hero() {
   return (
     /* No bottom border — the next section's `.band` seam draws the join, and
        running both put a flat grey rule directly under a brass one. */
-    <section className="relative overflow-hidden">
+    <section ref={section} className="relative overflow-hidden">
       {/*
         The ground is the back of a card — see `.card-back`. It replaced a
         blurred photo of the shop, which at 14% opacity read as an image that
@@ -72,12 +93,13 @@ export function Hero() {
       */}
       <div aria-hidden className="card-back absolute inset-0" />
       {/* Emerald atmosphere, warmed with a low brass wash from the left */}
-      <div
+      <motion.div
         aria-hidden
         className="absolute inset-0"
         style={{
           background:
             "radial-gradient(70% 60% at 78% 40%, rgba(62,221,107,0.14), transparent 60%), radial-gradient(50% 50% at 5% 90%, rgba(217,168,87,0.09), transparent 65%), linear-gradient(180deg, rgba(6,16,11,0.72), rgba(6,16,11,0.96))",
+          ...(reduce ? {} : { y: glowY }),
         }}
       />
 
@@ -106,14 +128,20 @@ export function Hero() {
             <StoreStatus />
           </motion.div>
 
-          <motion.h1
-            variants={item}
-            className="mt-5 font-display text-display font-extrabold uppercase text-foreground sm:mt-6"
-          >
-            Windsor&apos;s
-            <br />
-            <span className="text-brass">card shop</span>
-          </motion.h1>
+          {/*
+            No `item` variant here. The words carry their own mask-wipe (see
+            `WordWipe`) and take their turn in this container's stagger by
+            inheriting its state — running the block fade as well would move
+            the headline twice for one arrival.
+          */}
+          <h1 className="mt-5 font-display text-display font-extrabold uppercase text-foreground sm:mt-6">
+            <WordWipe
+              lines={[
+                { text: "Windsor’s" },
+                { text: "card shop", accent: true },
+              ]}
+            />
+          </h1>
 
           <motion.p
             variants={item}
@@ -201,10 +229,11 @@ export function Hero() {
           one clear gesture into two competing ones.
         */}
         <motion.div
-          className="order-first lg:order-last"
+          className="relative order-first lg:order-last"
           initial={reduce ? false : { opacity: 0 }}
           animate={reduce ? false : { opacity: 1 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
+          style={reduce ? undefined : { y: fanY }}
         >
           <CardFan active={active} onActiveChange={setActive} />
         </motion.div>

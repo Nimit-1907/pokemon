@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { CardArt } from "@/components/shared/CardArt";
 import { ComingSoon } from "@/components/shared/ComingSoon";
 import { Reveal, StaggerGrid, StaggerItem } from "@/components/motion/Reveal";
+import { PageTransition } from "@/components/motion/PageTransition";
 import { collections, getListedProducts } from "@/lib/data";
 import { site } from "@/lib/site";
 import { comingSoon, showPrices } from "@/lib/flags";
@@ -24,11 +25,13 @@ export default function CollectionsPage() {
   */
   if (comingSoon.collectionsIndex) {
     return (
-      <ComingSoon
-        eyebrow="Full product index"
-        title="Coming soon"
-        description="We're still getting the full catalogue online. In the meantime, pick a game from the Products menu, or call the shop and we'll check the shelf for you."
-      />
+      <PageTransition>
+        <ComingSoon
+          eyebrow="Full product index"
+          title="Coming soon"
+          description="We're still getting the full catalogue online. In the meantime, pick a game from the Products menu, or call the shop and we'll check the shelf for you."
+        />
+      </PageTransition>
     );
   }
 
@@ -44,7 +47,7 @@ export default function CollectionsPage() {
 */
 function CollectionsIndex() {
   return (
-    <>
+    <PageTransition>
       <section className="relative overflow-hidden">
         <div
           aria-hidden
@@ -149,6 +152,6 @@ function CollectionsIndex() {
           </Reveal>
         </Container>
       </section>
-    </>
+    </PageTransition>
   );
 }

@@ -8,6 +8,7 @@ import { StoreInfoCards } from "@/components/shared/StoreInfoCards";
 import { MapEmbed } from "@/components/shared/MapEmbed";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 import { Reveal } from "@/components/motion/Reveal";
+import { PageTransition } from "@/components/motion/PageTransition";
 import { Button } from "@/components/ui/button";
 import { asset } from "@/lib/asset";
 import { site } from "@/lib/site";
@@ -39,7 +40,7 @@ const features = [
 
 export default function AboutPage() {
   return (
-    <>
+    <PageTransition>
       {/* Intro */}
       <section className="relative overflow-hidden">
         <div
@@ -132,6 +133,6 @@ export default function AboutPage() {
           </Reveal>
         </Container>
       </section>
-    </>
+    </PageTransition>
   );
 }

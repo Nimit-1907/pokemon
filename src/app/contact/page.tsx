@@ -8,6 +8,7 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { HoursList } from "@/components/shared/HoursList";
 import { StoreStatus } from "@/components/shared/StoreStatus";
 import { Reveal } from "@/components/motion/Reveal";
+import { PageTransition } from "@/components/motion/PageTransition";
 import { site } from "@/lib/site";
 import { mailHref, mapsHref, telHref } from "@/lib/contact";
 
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <>
+    <PageTransition>
       <section className="relative overflow-hidden">
         <div
           aria-hidden
@@ -100,7 +101,7 @@ export default function ContactPage() {
           </div>
         </Container>
       </section>
-    </>
+    </PageTransition>
   );
 }
 
