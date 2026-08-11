@@ -12,22 +12,19 @@
   which serves most Openverse results — 429s any agent without a project URL
   in it. One string satisfies both.
 */
-export const UA = "EmeraldCardsAndGames/1.0 (+https://github.com/Nimit1907/pokemon)";
+const UA = "EmeraldCardsAndGames/1.0 (+https://github.com/Nimit1907/pokemon)";
 
 /**
  * The illustration window of a card, as fractions of the scan. Cropping to
  * these strips the frame, name bar and rules text, leaving just the art.
  *
- * `onePiece` is the load-bearing one: Bandai stamps a "SAMPLE" band across the
- * middle of every official English One Piece image and every free mirror is
- * scraped from Bandai, so the crop has to stop above it. `pokemon` starts at
- * 12.8% rather than 10% to clear the "Evolves from …" bar that Stage-1 cards
- * carry above the art, and `lorcana` starts at 15% to clear the ink-cost
- * gem, which Lorcana prints over the top-left corner of the illustration.
+ * Only One Piece needs one, and it is load-bearing: Bandai stamps a "SAMPLE"
+ * band across the middle of every official English image, and every free
+ * mirror is scraped from Bandai, so the crop has to stop above it. Pokémon and
+ * Lorcana windows lived here too, for the collection-art builder that has
+ * since been dropped — every other tile uses its card whole.
  */
 export const ART_CROPS = {
-  pokemon: { left: 0.075, top: 0.128, width: 0.85, height: 0.275 },
-  lorcana: { left: 0.05, top: 0.15, width: 0.9, height: 0.32 },
   onePiece: { left: 0.035, top: 0.095, width: 0.93, height: 0.325 },
 };
 
